@@ -14,15 +14,12 @@ Originally created by John E. Dell in 1984, this remake brings the classic gamep
 
 ## 🎯 Features
 
-- **Mobile Responsive**: Optimized for all screen sizes from phones to desktops
 - **Classic Gameplay**: Faithful to the original with all core mechanics
 - **6 NYC Locations**: Travel between Bronx, Ghetto, Central Park, Manhattan, Coney Island, and Brooklyn
 - **Dynamic Pricing**: Watch for police busts and shortages that affect prices
 - **Random Events**: Encounter police, find drugs/cash, or get mugged while traveling
 - **Inventory Management**: Limited carrying capacity with option to buy a coat for more space
-- **Financial Strategy**: Manage cash, bank savings, and loan shark debt
 - **Health System**: Take damage from encounters, heal at the hospital
-- **Protection**: Buy a gun to defend against muggers and police
 
 ## 🕹️ How to Play
 
