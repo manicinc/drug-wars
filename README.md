@@ -4,7 +4,7 @@ A modern, mobile-responsive web remake of the classic 1984 Drug Wars game. Built
 
 ## 🎮 Play Now
 
-[Play Drug Wars Remake](https://manicinc.github.io/drug-wars-remake/)
+[Play Drug Wars Remake](https://manicinc.github.io/drug-wars/)
 
 ## 📖 About
 
