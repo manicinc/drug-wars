@@ -50,3 +50,4 @@ Your final net worth determines your ranking:
 - Original Drug Wars by John E. Dell (1984)
 - Remake by [manic.agency](https://manic.agency)
 - Inspired by the classic DOS/BBS game culture
+- One-shot prompt code generated from Claude
