@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
     <title>Drug Wars - Trading Game</title>
 
 ```
@@ -56,6 +58,43 @@
     /* Ensure all text inputs have 16px+ font size to prevent zoom on iOS */
     input, select, textarea {
         font-size: 16px !important;
+    }
+    
+    /* Keyboard focus styles */
+    *:focus {
+        outline: none;
+    }
+    
+    button:focus, 
+    input:focus,
+    .drug-item:focus,
+    .modal-content:focus {
+        outline: 2px solid #ffff00;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px rgba(255, 255, 0, 0.3);
+    }
+    
+    .keyboard-nav button:focus {
+        transform: scale(1.05);
+    }
+    
+    /* Keyboard navigation indicator */
+    .keyboard-indicator {
+        position: fixed;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 255, 0, 0.9);
+        color: #000;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        display: none;
+        z-index: 100;
+    }
+    
+    body.keyboard-nav .keyboard-indicator {
+        display: block;
     }
     
     .main-container {
@@ -153,11 +192,25 @@
         transition: all 0.3s;
         font-size: clamp(0.8rem, 2.5vw, 0.95rem);
         gap: 5px;
+        cursor: pointer;
+        position: relative;
+        tabindex: 0;
+    }
+    
+    .drug-item:hover,
+    .drug-item.keyboard-focus {
+        background-color: #1f1f1f;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        transform: translateY(-2px);
     }
     
     .drug-item:active {
-        background-color: #1f1f1f;
         transform: scale(0.98);
+    }
+    
+    .drug-item.selected {
+        background-color: #2f2f2f;
+        border-color: #ffff00;
     }
     
     .drug-name {
@@ -195,6 +248,12 @@
         touch-action: manipulation;
         -webkit-appearance: none;
         appearance: none;
+        position: relative;
+    }
+    
+    button:hover {
+        background-color: #00cc00;
+        transform: translateY(-1px);
     }
     
     button:active {
@@ -205,6 +264,12 @@
     button:disabled {
         background-color: #666;
         cursor: not-allowed;
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    
+    button:disabled:hover {
+        background-color: #666;
         transform: scale(1);
     }
     
@@ -261,6 +326,8 @@
         max-height: 80vh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        position: relative;
+        tabindex: -1;
     }
     
     .modal h3 {
@@ -346,6 +413,11 @@
         appearance: none;
     }
     
+    .info-button:hover {
+        transform: scale(1.1);
+        background-color: #00cc00;
+    }
+    
     .info-button:active {
         transform: scale(0.95);
         background-color: #00cc00;
@@ -374,6 +446,36 @@
     
     .info-content li {
         margin-bottom: 5px;
+    }
+    
+    .controls-section {
+        background-color: #0f0f0f;
+        border: 1px solid #00ff00;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px 0;
+    }
+    
+    .controls-section h5 {
+        color: #ffff00;
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+    
+    .control-item {
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 0;
+        font-size: 0.9rem;
+    }
+    
+    .control-key {
+        color: #ffff00;
+        font-weight: bold;
+        background-color: #1a1a1a;
+        padding: 2px 6px;
+        border-radius: 3px;
+        border: 1px solid #666;
     }
     
     .footer {
@@ -405,6 +507,23 @@
     
     .flash {
         animation: flash 0.5s ease-in-out;
+    }
+    
+    /* Skip link for accessibility */
+    .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        background: #00ff00;
+        color: #000;
+        padding: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        z-index: 200;
+    }
+    
+    .skip-link:focus {
+        top: 0;
     }
     
     /* Responsive adjustments */
@@ -485,15 +604,27 @@
     .main-container::-webkit-scrollbar-thumb:hover {
         background: #00cc00;
     }
+    
+    /* High contrast mode support */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
 </style>
 ```
 
 </head>
 <body>
-    <button class="info-button" onclick="showInfo()" aria-label="Game Info">?</button>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <button class="info-button" onclick="showInfo()" aria-label="Game Info" accesskey="h">?</button>
 
 ```
-<div class="main-container">
+<div class="keyboard-indicator">Keyboard Mode Active</div>
+
+<div class="main-container" id="main-content">
     <div class="game-container">
         <h1>💊 DRUG WARS 💊</h1>
         
@@ -535,19 +666,19 @@
         
         <div class="market">
             <h3>Street Prices</h3>
-            <div class="drug-list" id="drug-list"></div>
+            <div class="drug-list" id="drug-list" role="list"></div>
         </div>
         
         <div class="actions">
-            <button onclick="showTravelMenu()">✈️ Travel</button>
-            <button onclick="visitLoanShark()">💰 Loan Shark</button>
-            <button onclick="visitBank()">🏦 Bank</button>
-            <button onclick="visitHospital()">🏥 Hospital</button>
-            <button onclick="buyCoat()">🧥 Coat +50</button>
-            <button onclick="buyGun()">🔫 Gun</button>
+            <button onclick="showTravelMenu()" accesskey="t">✈️ Travel</button>
+            <button onclick="visitLoanShark()" accesskey="l">💰 Loan Shark</button>
+            <button onclick="visitBank()" accesskey="b">🏦 Bank</button>
+            <button onclick="visitHospital()" accesskey="p">🏥 Hospital</button>
+            <button onclick="buyCoat()" accesskey="c">🧥 Coat +50</button>
+            <button onclick="buyGun()" accesskey="g">🔫 Gun</button>
         </div>
         
-        <div class="message" id="message">
+        <div class="message" id="message" role="status" aria-live="polite">
             Welcome to Drug Wars! You have 30 days to make as much money as possible! Tap ? for help.
         </div>
     </div>
@@ -557,11 +688,11 @@
     <div>Drug Wars Remake v0.1.0 by <a href="https://manic.agency" target="_blank">manic.agency</a></div>
 </footer>
 
-<div class="modal" id="modal">
-    <div class="modal-content">
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-content" tabindex="-1">
         <h3 id="modal-title">Transaction</h3>
         <p id="modal-text"></p>
-        <input type="number" id="modal-input" min="0" inputmode="numeric">
+        <input type="number" id="modal-input" min="0" inputmode="numeric" aria-label="Amount">
         <div class="modal-buttons">
             <button id="modal-confirm">Confirm</button>
             <button onclick="closeModal()">Cancel</button>
@@ -569,18 +700,18 @@
     </div>
 </div>
 
-<div class="modal" id="travel-modal">
-    <div class="modal-content">
+<div class="modal" id="travel-modal" role="dialog" aria-modal="true">
+    <div class="modal-content" tabindex="-1">
         <h3>Choose Destination</h3>
-        <div id="travel-options"></div>
+        <div id="travel-options" role="list"></div>
         <div class="modal-buttons">
             <button onclick="closeTravelModal()">Cancel</button>
         </div>
     </div>
 </div>
 
-<div class="modal" id="info-modal">
-    <div class="modal-content">
+<div class="modal" id="info-modal" role="dialog" aria-modal="true">
+    <div class="modal-content" tabindex="-1">
         <h3>📖 Drug Wars - How to Play</h3>
         <div class="info-content">
             <h4>🎮 About</h4>
@@ -591,13 +722,73 @@
             
             <h4>📋 How to Play</h4>
             <ul>
-                <li><strong>Buy/Sell:</strong> Tap drugs to buy when prices are low, sell when high</li>
+                <li><strong>Buy/Sell:</strong> Click drugs to buy when prices are low, sell when high</li>
                 <li><strong>Travel:</strong> Move between 6 NYC locations for different prices</li>
                 <li><strong>Manage Space:</strong> You can carry 100 units (buy a coat for +50)</li>
                 <li><strong>Pay Debt:</strong> Your debt grows 10% daily - pay the loan shark!</li>
                 <li><strong>Bank:</strong> Store cash safely in the bank</li>
                 <li><strong>Health:</strong> Getting mugged or arrested hurts - visit the hospital</li>
             </ul>
+            
+            <div class="controls-section">
+                <h5>⌨️ Keyboard Controls</h5>
+                <div class="control-item">
+                    <span>Navigate drugs</span>
+                    <span><span class="control-key">↑</span> <span class="control-key">↓</span> or <span class="control-key">Tab</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Buy drug</span>
+                    <span><span class="control-key">B</span> or <span class="control-key">←</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Sell drug</span>
+                    <span><span class="control-key">S</span> or <span class="control-key">→</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Select drug</span>
+                    <span><span class="control-key">Enter</span> or <span class="control-key">Space</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Quick Travel</span>
+                    <span><span class="control-key">1-6</span> (locations)</span>
+                </div>
+                <div class="control-item">
+                    <span>Close modal</span>
+                    <span><span class="control-key">Esc</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Help</span>
+                    <span><span class="control-key">?</span> or <span class="control-key">H</span></span>
+                </div>
+            </div>
+            
+            <div class="controls-section">
+                <h5>🖱️ Quick Access Keys</h5>
+                <div class="control-item">
+                    <span>Travel</span>
+                    <span><span class="control-key">Alt+T</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Loan Shark</span>
+                    <span><span class="control-key">Alt+L</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Bank</span>
+                    <span><span class="control-key">Alt+B</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Hospital</span>
+                    <span><span class="control-key">Alt+P</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Buy Coat</span>
+                    <span><span class="control-key">Alt+C</span></span>
+                </div>
+                <div class="control-item">
+                    <span>Buy Gun</span>
+                    <span><span class="control-key">Alt+G</span></span>
+                </div>
+            </div>
             
             <h4>💡 Tips</h4>
             <ul>
@@ -657,6 +848,11 @@
         prices: {}
     };
     
+    // UI state
+    let selectedDrugIndex = 0;
+    let keyboardMode = false;
+    let lastInteractionWasKeyboard = false;
+    
     // Game configuration
     const locations = ['Bronx', 'Ghetto', 'Central Park', 'Manhattan', 'Coney Island', 'Brooklyn'];
     
@@ -673,15 +869,141 @@
     function initGame() {
         updatePrices();
         updateDisplay();
+        setupKeyboardNavigation();
         
         // Check if returning player
         if (localStorage.getItem('drugWarsPlayed')) {
             showMessage("Welcome back! Remember: buy low, sell high!");
         } else {
-            showMessage("Welcome to Drug Wars! Tap '?' for help. Good luck!");
+            showMessage("Welcome to Drug Wars! Press ? or H for help. Good luck!");
             localStorage.setItem('drugWarsPlayed', 'true');
             // Show info modal for first time players
             setTimeout(() => showInfo(), 500);
+        }
+    }
+    
+    // Setup keyboard navigation
+    function setupKeyboardNavigation() {
+        // Detect keyboard usage
+        document.addEventListener('keydown', function(e) {
+            lastInteractionWasKeyboard = true;
+            if (!keyboardMode) {
+                keyboardMode = true;
+                document.body.classList.add('keyboard-nav');
+            }
+        });
+        
+        document.addEventListener('mousedown', function() {
+            lastInteractionWasKeyboard = false;
+            if (keyboardMode) {
+                keyboardMode = false;
+                document.body.classList.remove('keyboard-nav');
+            }
+        });
+        
+        document.addEventListener('touchstart', function() {
+            lastInteractionWasKeyboard = false;
+            if (keyboardMode) {
+                keyboardMode = false;
+                document.body.classList.remove('keyboard-nav');
+            }
+        });
+        
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Skip if typing in input
+            if (e.target.tagName === 'INPUT') {
+                if (e.key === 'Escape') {
+                    e.target.blur();
+                    closeModal();
+                }
+                return;
+            }
+            
+            const key = e.key.toLowerCase();
+            
+            // Help
+            if (key === '?' || key === 'h') {
+                e.preventDefault();
+                showInfo();
+                return;
+            }
+            
+            // Modal controls
+            if (document.querySelector('.modal[style*="flex"]')) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    closeTravelModal();
+                    closeInfoModal();
+                }
+                return;
+            }
+            
+            // Drug navigation
+            const drugItems = document.querySelectorAll('.drug-item');
+            
+            if (key === 'arrowup' || (key === 'tab' && e.shiftKey)) {
+                e.preventDefault();
+                selectedDrugIndex = Math.max(0, selectedDrugIndex - 1);
+                updateDrugSelection();
+            } else if (key === 'arrowdown' || (key === 'tab' && !e.shiftKey)) {
+                e.preventDefault();
+                selectedDrugIndex = Math.min(drugs.length - 1, selectedDrugIndex + 1);
+                updateDrugSelection();
+            } else if (key === 'b' || key === 'arrowleft') {
+                e.preventDefault();
+                const drugName = drugs[selectedDrugIndex].name;
+                buyDrug(drugName);
+            } else if (key === 's' || key === 'arrowright') {
+                e.preventDefault();
+                const drugName = drugs[selectedDrugIndex].name;
+                if (gameState.inventory[drugName] > 0) {
+                    sellDrug(drugName);
+                }
+            } else if (key === 'enter' || key === ' ') {
+                e.preventDefault();
+                // Show buy/sell options for selected drug
+                const drugName = drugs[selectedDrugIndex].name;
+                if (gameState.inventory[drugName] > 0) {
+                    const choice = confirm(`${drugName}: Buy more (OK) or Sell (Cancel)?`);
+                    if (choice) {
+                        buyDrug(drugName);
+                    } else {
+                        sellDrug(drugName);
+                    }
+                } else {
+                    buyDrug(drugName);
+                }
+            }
+            
+            // Quick travel (1-6 keys)
+            if (key >= '1' && key <= '6') {
+                e.preventDefault();
+                const locationIndex = parseInt(key) - 1;
+                if (locationIndex < locations.length && locations[locationIndex] !== gameState.location) {
+                    travel(locations[locationIndex]);
+                }
+            }
+            
+            // Action shortcuts (without Alt for better compatibility)
+            if (key === 't' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                showTravelMenu();
+            }
+        });
+    }
+    
+    // Update drug selection visual
+    function updateDrugSelection() {
+        const drugItems = document.querySelectorAll('.drug-item');
+        drugItems.forEach((item, index) => {
+            item.classList.toggle('keyboard-focus', index === selectedDrugIndex);
+            item.setAttribute('aria-selected', index === selectedDrugIndex);
+        });
+        
+        // Scroll into view if needed
+        if (drugItems[selectedDrugIndex]) {
+            drugItems[selectedDrugIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     }
     
@@ -739,21 +1061,45 @@
         const drugList = document.getElementById('drug-list');
         drugList.innerHTML = '';
         
-        drugs.forEach(drug => {
+        drugs.forEach((drug, index) => {
             const div = document.createElement('div');
             div.className = 'drug-item';
+            div.setAttribute('role', 'listitem');
+            div.setAttribute('tabindex', '0');
+            div.setAttribute('aria-label', `${drug.name}: $${gameState.prices[drug.name].toLocaleString()} each, you own ${gameState.inventory[drug.name] || 0} units`);
+            
             const owned = gameState.inventory[drug.name] || 0;
             div.innerHTML = `
                 <span class="drug-name">${drug.name}</span>
                 <span class="drug-price">$${gameState.prices[drug.name].toLocaleString()}</span>
                 <span class="drug-owned">Own: ${owned}</span>
                 <div class="drug-buttons">
-                    <button onclick="buyDrug('${drug.name}')">Buy</button>
-                    <button onclick="sellDrug('${drug.name}')" ${owned === 0 ? 'disabled' : ''}>Sell</button>
+                    <button onclick="buyDrug('${drug.name}')" aria-label="Buy ${drug.name}">Buy</button>
+                    <button onclick="sellDrug('${drug.name}')" ${owned === 0 ? 'disabled' : ''} aria-label="Sell ${drug.name}">Sell</button>
                 </div>
             `;
+            
+            // Add click handler for entire row
+            div.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'BUTTON') {
+                    selectedDrugIndex = index;
+                    updateDrugSelection();
+                }
+            });
+            
+            // Add keyboard focus handler
+            div.addEventListener('focus', function() {
+                selectedDrugIndex = index;
+                updateDrugSelection();
+            });
+            
             drugList.appendChild(div);
         });
+        
+        // Restore selection if using keyboard
+        if (keyboardMode) {
+            updateDrugSelection();
+        }
     }
     
     // Update inventory display
@@ -840,18 +1186,25 @@
         const options = document.getElementById('travel-options');
         options.innerHTML = '';
         
-        locations.forEach(loc => {
+        locations.forEach((loc, index) => {
             if (loc !== gameState.location) {
                 const btn = document.createElement('button');
-                btn.textContent = loc;
+                btn.textContent = `${index + 1}. ${loc}`;
                 btn.style.width = '100%';
                 btn.style.marginBottom = '10px';
+                btn.setAttribute('aria-label', `Travel to ${loc}`);
                 btn.onclick = () => travel(loc);
                 options.appendChild(btn);
             }
         });
         
         modal.style.display = 'flex';
+        
+        // Focus modal content
+        setTimeout(() => {
+            const modalContent = modal.querySelector('.modal-content');
+            modalContent.focus();
+        }, 100);
     }
     
     // Travel to new location
@@ -1049,6 +1402,9 @@
         messageEl.innerHTML = text;
         messageEl.classList.add('flash');
         setTimeout(() => messageEl.classList.remove('flash'), 500);
+        
+        // Announce to screen readers
+        messageEl.setAttribute('aria-live', 'assertive');
     }
     
     // Modal functions
@@ -1065,14 +1421,21 @@
         };
         
         modal.style.display = 'flex';
-        // Don't auto-focus on mobile to prevent keyboard popup
-        if (window.innerWidth > 768) {
-            input.focus();
-        }
+        
+        // Focus management
+        setTimeout(() => {
+            if (lastInteractionWasKeyboard || window.innerWidth > 768) {
+                input.focus();
+            }
+        }, 100);
     }
     
     function closeModal() {
         document.getElementById('modal').style.display = 'none';
+        // Return focus to drug list if using keyboard
+        if (keyboardMode) {
+            updateDrugSelection();
+        }
     }
     
     function closeTravelModal() {
@@ -1081,6 +1444,10 @@
     
     function showInfo() {
         document.getElementById('info-modal').style.display = 'flex';
+        setTimeout(() => {
+            const modalContent = document.querySelector('#info-modal .modal-content');
+            modalContent.focus();
+        }, 100);
     }
     
     function closeInfoModal() {
@@ -1103,15 +1470,6 @@
         
         location.reload();
     }
-    
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeModal();
-            closeTravelModal();
-            closeInfoModal();
-        }
-    });
     
     // Prevent double-tap zoom
     let lastTouchEnd = 0;
