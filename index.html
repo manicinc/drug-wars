@@ -1,1057 +1,1139 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Drug Wars - Trading Game</title>
+
+```
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0a'/%3E%3Cg fill='%2300ff00'%3E%3Crect x='8' y='10' width='16' height='12' rx='6'/%3E%3Crect x='11' y='8' width='10' height='16' rx='5'/%3E%3Crect x='14' y='10' width='4' height='12' fill='%230a0a0a'/%3E%3Crect x='10' y='14' width='12' height='4' fill='%230a0a0a'/%3E%3C/g%3E%3C/svg%3E">
+
+<!-- Fallback for older browsers -->
+<link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABKElEQVRYhe2XsQ6CMBRFz5siDsZBF+Pg4uTi5OLk4uTi5OLk4uTi5OLq5OBgHBwkfg5QAq0ttKUQEk7SBNr33nPfa1+BQqHA/0YZQBNAHUAVgPK7VgB0ATQAqAVzB1AGcATwBPAC8E7xBHAA4BbMHQA3+JLv4ebbMgDAAsBKMP8cLoAnLBPAHsBWIHdsGYD2BXPrY1kChM5LAigBuEasmQCxXQBdyxJAsgugZ1kCSPYB1C1LAGErgKZlCSBsBVC1LAGErQAMdQFfAC/LEkByBLCzLAEAMIfYGsBGIHdsC2ADX/I9XH1TAKqCOAowADBJcX3qdVyOAJyTgMiLaQ8cElxRAKoJNxdGMpJ9ABcBGm4A7pF3zjMAXgKO8RO4CsA5afJRAE4ZfIECOT4fa7KI6X/eLwAAAABJRU5ErkJggg==">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0a'/%3E%3Cg fill='%2300ff00'%3E%3Crect x='8' y='10' width='16' height='12' rx='6'/%3E%3Crect x='11' y='8' width='10' height='16' rx='5'/%3E%3Crect x='14' y='10' width='4' height='12' fill='%230a0a0a'/%3E%3Crect x='10' y='14' width='12' height='4' fill='%230a0a0a'/%3E%3C/g%3E%3C/svg%3E">
+    html {
+        height: 100%;
+        /* Prevent zooming */
+        touch-action: pan-x pan-y;
+    }
     
-    <!-- Fallback for older browsers -->
-    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABKElEQVRYhe2XsQ6CMBRFz5siDsZBF+Pg4uTi5OLk4uTi5OLk4uTi5OLq5OBgHBwkfg5QAq0ttKUQEk7SBNr33nPfa1+BQqHA/0YZQBNAHUAVgPK7VgB0ATQAqAVzB1AGcATwBPAC8E7xBHAA4BbMHQA3+JLv4ebbMgDAAsBKMP8cLoAnLBPAHsBWIHdsGYD2BXPrY1kChM5LAigBuEasmQCxXQBdyxJAsgugZ1kCSPYB1C1LAGErgKZlCSBsBVC1LAGErQAMdQFfAC/LEkByBLCzLAEAMIfYGsBGIHdsC2ADX/I9XH1TAKqCOAowADBJcX3qdVyOAJyTgMiLaQ8cElxRAKoJNxdGMpJ9ABcBGm4A7pF3zjMAXgKO8RO4CsA5afJRAE4ZfIECOT4fa7KI6X/eLwAAAABJRU5ErkJggg==">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
-        
-        body {
-            font-family: 'Courier New', monospace;
-            background-color: #0a0a0a;
-            color: #00ff00;
-            display: flex;
-            flex-direction: column;
+    body {
+        height: 100%;
+        font-family: 'Courier New', monospace;
+        background-color: #0a0a0a;
+        color: #00ff00;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        /* Prevent pull-to-refresh and overscroll */
+        overscroll-behavior: none;
+        position: fixed;
+        width: 100%;
+    }
+    
+    /* All interactive elements must have touch-action */
+    button, input, select, textarea, a {
+        touch-action: manipulation;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    /* Ensure all text inputs have 16px+ font size to prevent zoom on iOS */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+    
+    .main-container {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 60px 10px 50px 10px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+    
+    .game-container {
+        width: 100%;
+        max-width: 800px;
+        background-color: #1a1a1a;
+        border: 2px solid #00ff00;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        margin-bottom: 20px;
+    }
+    
+    h1 {
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+    
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #0f0f0f;
+        border: 1px solid #00ff00;
+        border-radius: 5px;
+    }
+    
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+    }
+    
+    .stat-item span:first-child {
+        font-size: 0.8em;
+        opacity: 0.7;
+    }
+    
+    .stat-item span:last-child {
+        font-weight: bold;
+        color: #ffff00;
+    }
+    
+    .location {
+        text-align: center;
+        font-size: clamp(1rem, 3vw, 1.2rem);
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #0f0f0f;
+        border: 1px solid #00ff00;
+        border-radius: 5px;
+    }
+    
+    .market {
+        margin-bottom: 15px;
+    }
+    
+    .market h3, .inventory h3 {
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: clamp(1rem, 3vw, 1.1rem);
+    }
+    
+    .drug-list {
+        display: grid;
+        gap: 8px;
+    }
+    
+    .drug-item {
+        display: grid;
+        grid-template-columns: minmax(80px, 2fr) minmax(60px, 1fr) minmax(50px, 1fr) auto;
+        align-items: center;
+        padding: 8px;
+        background-color: #0f0f0f;
+        border: 1px solid #00ff00;
+        border-radius: 5px;
+        transition: all 0.3s;
+        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        gap: 5px;
+    }
+    
+    .drug-item:active {
+        background-color: #1f1f1f;
+        transform: scale(0.98);
+    }
+    
+    .drug-name {
+        font-weight: bold;
+        word-break: break-word;
+    }
+    
+    .drug-price {
+        text-align: right;
+        color: #ffff00;
+    }
+    
+    .drug-owned {
+        text-align: right;
+        opacity: 0.8;
+    }
+    
+    .drug-buttons {
+        display: flex;
+        gap: 4px;
+        justify-content: flex-end;
+    }
+    
+    button {
+        background-color: #00ff00;
+        color: #000;
+        border: none;
+        padding: 6px 12px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+        border-radius: 3px;
+        transition: all 0.3s;
+        font-size: 16px !important; /* Critical: prevents iOS zoom */
+        touch-action: manipulation;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    
+    button:active {
+        background-color: #00cc00;
+        transform: scale(0.95);
+    }
+    
+    button:disabled {
+        background-color: #666;
+        cursor: not-allowed;
+        transform: scale(1);
+    }
+    
+    .actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 15px;
+    }
+    
+    .actions button {
+        padding: 10px 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .message {
+        margin-top: 15px;
+        padding: 12px;
+        background-color: #0f0f0f;
+        border: 1px solid #00ff00;
+        border-radius: 5px;
+        text-align: center;
+        min-height: 50px;
+        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 20px;
+        touch-action: none;
+    }
+    
+    .modal-content {
+        background-color: #1a1a1a;
+        border: 2px solid #00ff00;
+        border-radius: 10px;
+        padding: 20px;
+        max-width: 400px;
+        width: 100%;
+        max-height: 80vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .modal h3 {
+        margin-bottom: 15px;
+        text-align: center;
+        font-size: clamp(1.1rem, 3vw, 1.3rem);
+        color: #00ff00;
+    }
+    
+    .modal input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        background-color: #0f0f0f;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        font-family: inherit;
+        border-radius: 3px;
+        font-size: 16px !important; /* Critical: prevents iOS zoom */
+        touch-action: manipulation;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    
+    /* Remove input number spinner arrows */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+    
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .modal-buttons button {
+        flex: 1;
+        padding: 12px;
+        font-size: 16px !important;
+    }
+    
+    .inventory {
+        margin-bottom: 15px;
+        padding: 12px;
+        background-color: #0f0f0f;
+        border: 1px solid #00ff00;
+        border-radius: 5px;
+    }
+    
+    .inventory-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+    }
+    
+    .info-button {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: #00ff00;
+        color: #000;
+        border: 2px solid #fff;
+        font-size: 24px !important;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 100;
+        box-shadow: 0 2px 10px rgba(0, 255, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    
+    .info-button:active {
+        transform: scale(0.95);
+        background-color: #00cc00;
+    }
+    
+    .info-content {
+        padding: 0;
+        line-height: 1.6;
+    }
+    
+    .info-content h4 {
+        color: #00ff00;
+        margin-top: 15px;
+        margin-bottom: 8px;
+        font-size: clamp(1rem, 3vw, 1.1rem);
+    }
+    
+    .info-content p, .info-content ul {
+        margin-bottom: 10px;
+        font-size: clamp(0.85rem, 2.5vw, 1rem);
+    }
+    
+    .info-content ul {
+        padding-left: 20px;
+    }
+    
+    .info-content li {
+        margin-bottom: 5px;
+    }
+    
+    .footer {
+        background-color: #0f0f0f;
+        border-top: 1px solid #00ff00;
+        padding: 10px;
+        text-align: center;
+        font-size: clamp(0.7rem, 2vw, 0.85rem);
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+    }
+    
+    .footer a {
+        color: #00ff00;
+        text-decoration: none;
+    }
+    
+    .footer a:hover {
+        text-decoration: underline;
+    }
+    
+    @keyframes flash {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    .flash {
+        animation: flash 0.5s ease-in-out;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+        .game-container {
+            padding: 10px;
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
         }
         
         .main-container {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 60px 10px 50px 10px; /* Top padding for info button, bottom for footer */
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        
-        .game-container {
-            width: 100%;
-            max-width: 800px;
-            background-color: #1a1a1a;
-            border: 2px solid #00ff00;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-            margin-bottom: 20px;
-        }
-        
-        h1 {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: clamp(1.5rem, 5vw, 2rem);
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            padding: 60px 0 50px 0;
         }
         
         .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #0f0f0f;
-            border: 1px solid #00ff00;
-            border-radius: 5px;
-        }
-        
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            font-size: clamp(0.75rem, 2.5vw, 0.9rem);
-        }
-        
-        .stat-item span:first-child {
-            font-size: 0.8em;
-            opacity: 0.7;
-        }
-        
-        .stat-item span:last-child {
-            font-weight: bold;
-            color: #ffff00;
-        }
-        
-        .location {
-            text-align: center;
-            font-size: clamp(1rem, 3vw, 1.2rem);
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #0f0f0f;
-            border: 1px solid #00ff00;
-            border-radius: 5px;
-        }
-        
-        .market {
-            margin-bottom: 15px;
-        }
-        
-        .market h3, .inventory h3 {
-            margin-bottom: 10px;
-            text-align: center;
-            font-size: clamp(1rem, 3vw, 1.1rem);
-        }
-        
-        .drug-list {
-            display: grid;
-            gap: 8px;
+            grid-template-columns: repeat(2, 1fr);
         }
         
         .drug-item {
-            display: grid;
-            grid-template-columns: minmax(80px, 2fr) minmax(60px, 1fr) minmax(50px, 1fr) auto;
-            align-items: center;
-            padding: 8px;
-            background-color: #0f0f0f;
-            border: 1px solid #00ff00;
-            border-radius: 5px;
-            transition: all 0.3s;
-            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
-            gap: 5px;
-        }
-        
-        .drug-item:active {
-            background-color: #1f1f1f;
-            transform: scale(0.98);
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: auto auto;
         }
         
         .drug-name {
-            font-weight: bold;
-            word-break: break-word;
+            grid-column: 1;
         }
         
         .drug-price {
+            grid-column: 2;
             text-align: right;
-            color: #ffff00;
         }
         
         .drug-owned {
-            text-align: right;
-            opacity: 0.8;
+            grid-column: 1;
+            text-align: left;
+            font-size: 0.8em;
         }
         
         .drug-buttons {
-            display: flex;
-            gap: 4px;
-            justify-content: flex-end;
+            grid-column: 2;
         }
         
-        button {
-            background-color: #00ff00;
-            color: #000;
-            border: none;
-            padding: 6px 12px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-            border-radius: 3px;
-            transition: all 0.3s;
-            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
-            touch-action: manipulation;
-        }
-        
-        button:active {
-            background-color: #00cc00;
-            transform: scale(0.95);
-        }
-        
-        button:disabled {
-            background-color: #666;
-            cursor: not-allowed;
-            transform: scale(1);
+        .drug-buttons button {
+            font-size: 16px !important;
+            padding: 8px;
         }
         
         .actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 15px;
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .stats {
+            grid-template-columns: repeat(6, 1fr);
         }
         
-        .actions button {
-            padding: 10px 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .actions {
+            grid-template-columns: repeat(3, 1fr);
         }
-        
-        .message {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: #0f0f0f;
-            border: 1px solid #00ff00;
-            border-radius: 5px;
-            text-align: center;
-            min-height: 50px;
-            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-        
-        .modal-content {
-            background-color: #1a1a1a;
-            border: 2px solid #00ff00;
-            border-radius: 10px;
-            padding: 20px;
-            max-width: 400px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        .modal h3 {
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: clamp(1.1rem, 3vw, 1.3rem);
-            color: #00ff00;
-        }
-        
-        .modal input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            background-color: #0f0f0f;
-            border: 1px solid #00ff00;
-            color: #00ff00;
-            font-family: inherit;
-            border-radius: 3px;
-            font-size: 16px; /* Prevents zoom on iOS */
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        
-        .modal-buttons button {
-            flex: 1;
-            padding: 10px;
-        }
-        
-        .inventory {
-            margin-bottom: 15px;
-            padding: 12px;
-            background-color: #0f0f0f;
-            border: 1px solid #00ff00;
-            border-radius: 5px;
-        }
-        
-        .inventory-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
-        }
-        
-        .info-button {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background-color: #00ff00;
-            color: #000;
-            border: 2px solid #fff;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 255, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .info-button:active {
-            transform: scale(0.95);
-            background-color: #00cc00;
-        }
-        
-        .info-content {
-            padding: 0;
-            line-height: 1.6;
-        }
-        
-        .info-content h4 {
-            color: #00ff00;
-            margin-top: 15px;
-            margin-bottom: 8px;
-            font-size: clamp(1rem, 3vw, 1.1rem);
-        }
-        
-        .info-content p, .info-content ul {
-            margin-bottom: 10px;
-            font-size: clamp(0.85rem, 2.5vw, 1rem);
-        }
-        
-        .info-content ul {
-            padding-left: 20px;
-        }
-        
-        .info-content li {
-            margin-bottom: 5px;
-        }
-        
-        .footer {
-            background-color: #0f0f0f;
-            border-top: 1px solid #00ff00;
-            padding: 10px;
-            text-align: center;
-            font-size: clamp(0.7rem, 2vw, 0.85rem);
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 50;
-        }
-        
-        .footer a {
-            color: #00ff00;
-            text-decoration: none;
-        }
-        
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        
-        @keyframes flash {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .flash {
-            animation: flash 0.5s ease-in-out;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .game-container {
-                padding: 10px;
-                border-radius: 0;
-                border-left: none;
-                border-right: none;
-            }
-            
-            .main-container {
-                padding: 60px 0 50px 0;
-            }
-            
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .drug-item {
-                grid-template-columns: 2fr 1fr;
-                grid-template-rows: auto auto;
-            }
-            
-            .drug-name {
-                grid-column: 1;
-            }
-            
-            .drug-price {
-                grid-column: 2;
-                text-align: right;
-            }
-            
-            .drug-owned {
-                grid-column: 1;
-                text-align: left;
-                font-size: 0.8em;
-            }
-            
-            .drug-buttons {
-                grid-column: 2;
-            }
-            
-            .actions {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (min-width: 768px) {
-            .stats {
-                grid-template-columns: repeat(6, 1fr);
-            }
-            
-            .actions {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        
-        /* Scrollbar styling */
-        .main-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .main-container::-webkit-scrollbar-track {
-            background: #0f0f0f;
-        }
-        
-        .main-container::-webkit-scrollbar-thumb {
-            background: #00ff00;
-            border-radius: 4px;
-        }
-        
-        .main-container::-webkit-scrollbar-thumb:hover {
-            background: #00cc00;
-        }
-    </style>
+    }
+    
+    /* Scrollbar styling */
+    .main-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .main-container::-webkit-scrollbar-track {
+        background: #0f0f0f;
+    }
+    
+    .main-container::-webkit-scrollbar-thumb {
+        background: #00ff00;
+        border-radius: 4px;
+    }
+    
+    .main-container::-webkit-scrollbar-thumb:hover {
+        background: #00cc00;
+    }
+</style>
+```
+
 </head>
 <body>
     <button class="info-button" onclick="showInfo()" aria-label="Game Info">?</button>
-    
-    <div class="main-container">
-        <div class="game-container">
-            <h1>💊 DRUG WARS 💊</h1>
-            
-            <div class="stats">
-                <div class="stat-item">
-                    <span>Cash</span>
-                    <span id="cash">$2,000</span>
-                </div>
-                <div class="stat-item">
-                    <span>Debt</span>
-                    <span id="debt">$5,500</span>
-                </div>
-                <div class="stat-item">
-                    <span>Bank</span>
-                    <span id="bank">$0</span>
-                </div>
-                <div class="stat-item">
-                    <span>Day</span>
-                    <span id="day">1/30</span>
-                </div>
-                <div class="stat-item">
-                    <span>Space</span>
-                    <span id="space">100/100</span>
-                </div>
-                <div class="stat-item">
-                    <span>Health</span>
-                    <span id="health">100%</span>
-                </div>
-            </div>
-            
-            <div class="location">
-                📍 <span id="current-location">Bronx</span>
-            </div>
-            
-            <div class="inventory" id="inventory">
-                <h3>Your Stash</h3>
-                <div id="inventory-list"></div>
-            </div>
-            
-            <div class="market">
-                <h3>Street Prices</h3>
-                <div class="drug-list" id="drug-list"></div>
-            </div>
-            
-            <div class="actions">
-                <button onclick="showTravelMenu()">✈️ Travel</button>
-                <button onclick="visitLoanShark()">💰 Loan Shark</button>
-                <button onclick="visitBank()">🏦 Bank</button>
-                <button onclick="visitHospital()">🏥 Hospital</button>
-                <button onclick="buyCoat()">🧥 Coat +50</button>
-                <button onclick="buyGun()">🔫 Gun</button>
-            </div>
-            
-            <div class="message" id="message">
-                Welcome to Drug Wars! You have 30 days to make as much money as possible! Tap ? for help.
-            </div>
-        </div>
-    </div>
-    
-    <footer class="footer">
-        <div>Drug Wars Remake v0.1.0 by <a href="https://manic.agency" target="_blank">manic.agency</a></div>
-    </footer>
-    
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <h3 id="modal-title">Transaction</h3>
-            <p id="modal-text"></p>
-            <input type="number" id="modal-input" min="0" inputmode="numeric">
-            <div class="modal-buttons">
-                <button id="modal-confirm">Confirm</button>
-                <button onclick="closeModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="travel-modal">
-        <div class="modal-content">
-            <h3>Choose Destination</h3>
-            <div id="travel-options"></div>
-            <div class="modal-buttons">
-                <button onclick="closeTravelModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="info-modal">
-        <div class="modal-content">
-            <h3>📖 Drug Wars - How to Play</h3>
-            <div class="info-content">
-                <h4>🎮 About</h4>
-                <p>Drug Wars is a classic text-based strategy game where you play as a street dealer trying to make as much money as possible in 30 days. Buy low, sell high, and avoid the dangers of the streets!</p>
-                
-                <h4>🎯 Objective</h4>
-                <p>Start with $2,000 cash and $5,500 in debt. Your goal is to build the highest net worth possible before day 30.</p>
-                
-                <h4>📋 How to Play</h4>
-                <ul>
-                    <li><strong>Buy/Sell:</strong> Tap drugs to buy when prices are low, sell when high</li>
-                    <li><strong>Travel:</strong> Move between 6 NYC locations for different prices</li>
-                    <li><strong>Manage Space:</strong> You can carry 100 units (buy a coat for +50)</li>
-                    <li><strong>Pay Debt:</strong> Your debt grows 10% daily - pay the loan shark!</li>
-                    <li><strong>Bank:</strong> Store cash safely in the bank</li>
-                    <li><strong>Health:</strong> Getting mugged or arrested hurts - visit the hospital</li>
-                </ul>
-                
-                <h4>💡 Tips</h4>
-                <ul>
-                    <li>Watch for price events - cops busts drop prices, shortages raise them!</li>
-                    <li>Buy a gun ($500) to protect yourself from muggers and police</li>
-                    <li>Higher-value drugs (Cocaine, Heroin) = bigger profits but higher risk</li>
-                    <li>Keep some cash for opportunities and emergencies</li>
-                    <li>Your debt compounds daily - don't ignore it!</li>
-                </ul>
-                
-                <h4>⚡ Random Events</h4>
-                <p>While traveling, you might find drugs or cash, get mugged, or encounter police. A gun helps protect you!</p>
-                
-                <h4>🏆 Rankings</h4>
-                <ul>
-                    <li>< $0: Street Junkie</li>
-                    <li>< $10k: Small Time Dealer</li>
-                    <li>< $50k: Neighborhood Supplier</li>
-                    <li>< $100k: Drug Lord</li>
-                    <li>< $500k: Kingpin</li>
-                    <li>$500k+: Pablo Escobar</li>
-                </ul>
-                
-                <p style="text-align: center; margin-top: 20px;"><strong>Good luck on the streets!</strong></p>
-            </div>
-            <div class="modal-buttons">
-                <button onclick="closeInfoModal()">Let's Play!</button>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        // Game state
-        let gameState = {
-            cash: 2000,
-            debt: 5500,
-            bank: 0,
-            day: 1,
-            maxDays: 30,
-            health: 100,
-            location: 'Bronx',
-            maxSpace: 100,
-            hasGun: false,
-            hasCoat: false,
-            inventory: {},
-            prices: {}
-        };
+```
+<div class="main-container">
+    <div class="game-container">
+        <h1>💊 DRUG WARS 💊</h1>
         
-        // Game configuration
-        const locations = ['Bronx', 'Ghetto', 'Central Park', 'Manhattan', 'Coney Island', 'Brooklyn'];
+        <div class="stats">
+            <div class="stat-item">
+                <span>Cash</span>
+                <span id="cash">$2,000</span>
+            </div>
+            <div class="stat-item">
+                <span>Debt</span>
+                <span id="debt">$5,500</span>
+            </div>
+            <div class="stat-item">
+                <span>Bank</span>
+                <span id="bank">$0</span>
+            </div>
+            <div class="stat-item">
+                <span>Day</span>
+                <span id="day">1/30</span>
+            </div>
+            <div class="stat-item">
+                <span>Space</span>
+                <span id="space">100/100</span>
+            </div>
+            <div class="stat-item">
+                <span>Health</span>
+                <span id="health">100%</span>
+            </div>
+        </div>
         
-        const drugs = [
-            { name: 'Cocaine', minPrice: 15000, maxPrice: 30000 },
-            { name: 'Heroin', minPrice: 5000, maxPrice: 14000 },
-            { name: 'Acid', minPrice: 1000, maxPrice: 4500 },
-            { name: 'Weed', minPrice: 300, maxPrice: 900 },
-            { name: 'Speed', minPrice: 70, maxPrice: 250 },
-            { name: 'Ludes', minPrice: 10, maxPrice: 60 }
-        ];
+        <div class="location">
+            📍 <span id="current-location">Bronx</span>
+        </div>
         
-        // Initialize game
-        function initGame() {
-            updatePrices();
-            updateDisplay();
+        <div class="inventory" id="inventory">
+            <h3>Your Stash</h3>
+            <div id="inventory-list"></div>
+        </div>
+        
+        <div class="market">
+            <h3>Street Prices</h3>
+            <div class="drug-list" id="drug-list"></div>
+        </div>
+        
+        <div class="actions">
+            <button onclick="showTravelMenu()">✈️ Travel</button>
+            <button onclick="visitLoanShark()">💰 Loan Shark</button>
+            <button onclick="visitBank()">🏦 Bank</button>
+            <button onclick="visitHospital()">🏥 Hospital</button>
+            <button onclick="buyCoat()">🧥 Coat +50</button>
+            <button onclick="buyGun()">🔫 Gun</button>
+        </div>
+        
+        <div class="message" id="message">
+            Welcome to Drug Wars! You have 30 days to make as much money as possible! Tap ? for help.
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div>Drug Wars Remake v0.1.0 by <a href="https://manic.agency" target="_blank">manic.agency</a></div>
+</footer>
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h3 id="modal-title">Transaction</h3>
+        <p id="modal-text"></p>
+        <input type="number" id="modal-input" min="0" inputmode="numeric">
+        <div class="modal-buttons">
+            <button id="modal-confirm">Confirm</button>
+            <button onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="travel-modal">
+    <div class="modal-content">
+        <h3>Choose Destination</h3>
+        <div id="travel-options"></div>
+        <div class="modal-buttons">
+            <button onclick="closeTravelModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="info-modal">
+    <div class="modal-content">
+        <h3>📖 Drug Wars - How to Play</h3>
+        <div class="info-content">
+            <h4>🎮 About</h4>
+            <p>Drug Wars is a classic text-based strategy game where you play as a street dealer trying to make as much money as possible in 30 days. Buy low, sell high, and avoid the dangers of the streets!</p>
             
-            // Check if returning player
-            if (localStorage.getItem('drugWarsPlayed')) {
-                showMessage("Welcome back! Remember: buy low, sell high!");
-            } else {
-                showMessage("Welcome to Drug Wars! Tap '?' for help. Good luck!");
-                localStorage.setItem('drugWarsPlayed', 'true');
-                // Show info modal for first time players
-                setTimeout(() => showInfo(), 500);
-            }
+            <h4>🎯 Objective</h4>
+            <p>Start with $2,000 cash and $5,500 in debt. Your goal is to build the highest net worth possible before day 30.</p>
+            
+            <h4>📋 How to Play</h4>
+            <ul>
+                <li><strong>Buy/Sell:</strong> Tap drugs to buy when prices are low, sell when high</li>
+                <li><strong>Travel:</strong> Move between 6 NYC locations for different prices</li>
+                <li><strong>Manage Space:</strong> You can carry 100 units (buy a coat for +50)</li>
+                <li><strong>Pay Debt:</strong> Your debt grows 10% daily - pay the loan shark!</li>
+                <li><strong>Bank:</strong> Store cash safely in the bank</li>
+                <li><strong>Health:</strong> Getting mugged or arrested hurts - visit the hospital</li>
+            </ul>
+            
+            <h4>💡 Tips</h4>
+            <ul>
+                <li>Watch for price events - cops busts drop prices, shortages raise them!</li>
+                <li>Buy a gun ($500) to protect yourself from muggers and police</li>
+                <li>Higher-value drugs (Cocaine, Heroin) = bigger profits but higher risk</li>
+                <li>Keep some cash for opportunities and emergencies</li>
+                <li>Your debt compounds daily - don't ignore it!</li>
+            </ul>
+            
+            <h4>⚡ Random Events</h4>
+            <p>While traveling, you might find drugs or cash, get mugged, or encounter police. A gun helps protect you!</p>
+            
+            <h4>🏆 Rankings</h4>
+            <ul>
+                <li>< $0: Street Junkie</li>
+                <li>< $10k: Small Time Dealer</li>
+                <li>< $50k: Neighborhood Supplier</li>
+                <li>< $100k: Drug Lord</li>
+                <li>< $500k: Kingpin</li>
+                <li>$500k+: Pablo Escobar</li>
+            </ul>
+            
+            <p style="text-align: center; margin-top: 20px;"><strong>Good luck on the streets!</strong></p>
+        </div>
+        <div class="modal-buttons">
+            <button onclick="closeInfoModal()">Let's Play!</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Prevent viewport scaling on iOS
+    document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (e.scale !== 1) {
+            e.preventDefault();
         }
+    }, { passive: false });
+    
+    // Game state
+    let gameState = {
+        cash: 2000,
+        debt: 5500,
+        bank: 0,
+        day: 1,
+        maxDays: 30,
+        health: 100,
+        location: 'Bronx',
+        maxSpace: 100,
+        hasGun: false,
+        hasCoat: false,
+        inventory: {},
+        prices: {}
+    };
+    
+    // Game configuration
+    const locations = ['Bronx', 'Ghetto', 'Central Park', 'Manhattan', 'Coney Island', 'Brooklyn'];
+    
+    const drugs = [
+        { name: 'Cocaine', minPrice: 15000, maxPrice: 30000 },
+        { name: 'Heroin', minPrice: 5000, maxPrice: 14000 },
+        { name: 'Acid', minPrice: 1000, maxPrice: 4500 },
+        { name: 'Weed', minPrice: 300, maxPrice: 900 },
+        { name: 'Speed', minPrice: 70, maxPrice: 250 },
+        { name: 'Ludes', minPrice: 10, maxPrice: 60 }
+    ];
+    
+    // Initialize game
+    function initGame() {
+        updatePrices();
+        updateDisplay();
         
-        // Update drug prices for current location
-        function updatePrices() {
-            gameState.prices = {};
-            drugs.forEach(drug => {
-                let price = Math.floor(Math.random() * (drug.maxPrice - drug.minPrice + 1)) + drug.minPrice;
-                
-                // Random price events
-                if (Math.random() < 0.1) {
-                    if (Math.random() < 0.5) {
-                        price = Math.floor(price * 0.2); // Cops bust - prices drop
-                        setTimeout(() => showMessage(`Cops made a big ${drug.name} bust! Prices are rock bottom!`), 100);
-                    } else {
-                        price = Math.floor(price * 3); // Shortage - prices soar
-                        setTimeout(() => showMessage(`${drug.name} shortage in ${gameState.location}! Prices are insane!`), 100);
-                    }
-                }
-                
-                gameState.prices[drug.name] = price;
-            });
+        // Check if returning player
+        if (localStorage.getItem('drugWarsPlayed')) {
+            showMessage("Welcome back! Remember: buy low, sell high!");
+        } else {
+            showMessage("Welcome to Drug Wars! Tap '?' for help. Good luck!");
+            localStorage.setItem('drugWarsPlayed', 'true');
+            // Show info modal for first time players
+            setTimeout(() => showInfo(), 500);
         }
-        
-        // Calculate used space
-        function getUsedSpace() {
-            return Object.values(gameState.inventory).reduce((sum, qty) => sum + qty, 0);
-        }
-        
-        // Update display
-        function updateDisplay() {
-            document.getElementById('cash').textContent = `$${gameState.cash.toLocaleString()}`;
-            document.getElementById('debt').textContent = `$${gameState.debt.toLocaleString()}`;
-            document.getElementById('bank').textContent = `$${gameState.bank.toLocaleString()}`;
-            document.getElementById('day').textContent = `${gameState.day}/${gameState.maxDays}`;
-            document.getElementById('space').textContent = `${getUsedSpace()}/${gameState.maxSpace}`;
-            document.getElementById('health').textContent = `${gameState.health}%`;
-            document.getElementById('current-location').textContent = gameState.location;
+    }
+    
+    // Update drug prices for current location
+    function updatePrices() {
+        gameState.prices = {};
+        drugs.forEach(drug => {
+            let price = Math.floor(Math.random() * (drug.maxPrice - drug.minPrice + 1)) + drug.minPrice;
             
-            updateDrugList();
-            updateInventory();
-            
-            // Check game over conditions
-            if (gameState.day > gameState.maxDays) {
-                endGame();
-            }
-            if (gameState.health <= 0) {
-                showMessage("You died! Game Over!");
-                setTimeout(() => location.reload(), 3000);
-            }
-        }
-        
-        // Update drug list display
-        function updateDrugList() {
-            const drugList = document.getElementById('drug-list');
-            drugList.innerHTML = '';
-            
-            drugs.forEach(drug => {
-                const div = document.createElement('div');
-                div.className = 'drug-item';
-                const owned = gameState.inventory[drug.name] || 0;
-                div.innerHTML = `
-                    <span class="drug-name">${drug.name}</span>
-                    <span class="drug-price">$${gameState.prices[drug.name].toLocaleString()}</span>
-                    <span class="drug-owned">Own: ${owned}</span>
-                    <div class="drug-buttons">
-                        <button onclick="buyDrug('${drug.name}')">Buy</button>
-                        <button onclick="sellDrug('${drug.name}')" ${owned === 0 ? 'disabled' : ''}>Sell</button>
-                    </div>
-                `;
-                drugList.appendChild(div);
-            });
-        }
-        
-        // Update inventory display
-        function updateInventory() {
-            const inventoryList = document.getElementById('inventory-list');
-            inventoryList.innerHTML = '';
-            
-            let hasItems = false;
-            for (const [drug, qty] of Object.entries(gameState.inventory)) {
-                if (qty > 0) {
-                    hasItems = true;
-                    const div = document.createElement('div');
-                    div.className = 'inventory-item';
-                    div.innerHTML = `
-                        <span>${drug}:</span>
-                        <span>${qty} units</span>
-                    `;
-                    inventoryList.appendChild(div);
-                }
-            }
-            
-            if (!hasItems) {
-                inventoryList.innerHTML = '<div style="text-align: center; opacity: 0.7;">Empty - buy some product!</div>';
-            }
-        }
-        
-        // Buy drug
-        function buyDrug(drugName) {
-            const price = gameState.prices[drugName];
-            const maxCanBuy = Math.floor(gameState.cash / price);
-            const spaceLeft = gameState.maxSpace - getUsedSpace();
-            const maxAfford = Math.min(maxCanBuy, spaceLeft);
-            
-            if (maxAfford === 0) {
-                showMessage(spaceLeft === 0 ? "No space left! Sell something or buy a coat!" : "You can't afford any!");
-                return;
-            }
-            
-            showModal(
-                `Buy ${drugName}`,
-                `Price: $${price.toLocaleString()} each<br>You can afford: ${maxAfford} units`,
-                (amount) => {
-                    amount = parseInt(amount);
-                    if (amount > 0 && amount <= maxAfford) {
-                        const cost = amount * price;
-                        gameState.cash -= cost;
-                        gameState.inventory[drugName] = (gameState.inventory[drugName] || 0) + amount;
-                        showMessage(`Bought ${amount} units of ${drugName} for $${cost.toLocaleString()}`);
-                        updateDisplay();
-                    }
-                }
-            );
-        }
-        
-        // Sell drug
-        function sellDrug(drugName) {
-            const owned = gameState.inventory[drugName] || 0;
-            if (owned === 0) return;
-            
-            const price = gameState.prices[drugName];
-            
-            showModal(
-                `Sell ${drugName}`,
-                `Price: $${price.toLocaleString()} each<br>You have: ${owned} units`,
-                (amount) => {
-                    amount = parseInt(amount);
-                    if (amount > 0 && amount <= owned) {
-                        const revenue = amount * price;
-                        gameState.cash += revenue;
-                        gameState.inventory[drugName] -= amount;
-                        if (gameState.inventory[drugName] === 0) {
-                            delete gameState.inventory[drugName];
-                        }
-                        showMessage(`Sold ${amount} units of ${drugName} for $${revenue.toLocaleString()}`);
-                        updateDisplay();
-                    }
-                }
-            );
-        }
-        
-        // Show travel menu
-        function showTravelMenu() {
-            const modal = document.getElementById('travel-modal');
-            const options = document.getElementById('travel-options');
-            options.innerHTML = '';
-            
-            locations.forEach(loc => {
-                if (loc !== gameState.location) {
-                    const btn = document.createElement('button');
-                    btn.textContent = loc;
-                    btn.style.width = '100%';
-                    btn.style.marginBottom = '10px';
-                    btn.onclick = () => travel(loc);
-                    options.appendChild(btn);
-                }
-            });
-            
-            modal.style.display = 'flex';
-        }
-        
-        // Travel to new location
-        function travel(destination) {
-            closeTravelModal();
-            gameState.location = destination;
-            gameState.day++;
-            
-            // Interest on debt
-            gameState.debt = Math.floor(gameState.debt * 1.1);
-            
-            // Update prices for new location
-            updatePrices();
-            
-            // Random events
-            if (Math.random() < 0.3) {
-                randomEvent();
-            }
-            
-            showMessage(`Traveled to ${destination}. Day ${gameState.day}`);
-            updateDisplay();
-        }
-        
-        // Random events
-        function randomEvent() {
-            const events = [
-                () => {
-                    // Police encounter
-                    if (getUsedSpace() > 50) {
-                        if (gameState.hasGun && Math.random() < 0.5) {
-                            showMessage("Police tried to search you but you scared them off with your gun!");
-                        } else {
-                            const fine = Math.floor(gameState.cash * 0.2);
-                            gameState.cash = Math.max(0, gameState.cash - fine);
-                            const healthLoss = Math.floor(Math.random() * 20) + 10;
-                            gameState.health -= healthLoss;
-                            showMessage(`Police roughed you up! Lost $${fine.toLocaleString()} and ${healthLoss} health!`);
-                        }
-                    }
-                },
-                () => {
-                    // Find drugs
-                    const drug = drugs[Math.floor(Math.random() * drugs.length)];
-                    const amount = Math.floor(Math.random() * 8) + 1;
-                    const spaceLeft = gameState.maxSpace - getUsedSpace();
-                    if (spaceLeft >= amount) {
-                        gameState.inventory[drug.name] = (gameState.inventory[drug.name] || 0) + amount;
-                        showMessage(`You found ${amount} units of ${drug.name} on the ground!`);
-                    }
-                },
-                () => {
-                    // Mugging
-                    if (!gameState.hasGun && Math.random() < 0.5) {
-                        const loss = Math.floor(gameState.cash * 0.15);
-                        gameState.cash = Math.max(0, gameState.cash - loss);
-                        gameState.health -= 15;
-                        showMessage(`You got mugged! Lost $${loss.toLocaleString()} and 15 health!`);
-                    } else if (gameState.hasGun) {
-                        showMessage("Someone tried to mug you but ran away when they saw your gun!");
-                    }
-                },
-                () => {
-                    // Find cash
-                    const found = Math.floor(Math.random() * 1000) + 100;
-                    gameState.cash += found;
-                    showMessage(`You found $${found.toLocaleString()} in a wallet on the street!`);
-                }
-            ];
-            
-            events[Math.floor(Math.random() * events.length)]();
-        }
-        
-        // Visit loan shark
-        function visitLoanShark() {
-            showModal(
-                'Loan Shark',
-                `Current debt: $${gameState.debt.toLocaleString()}<br>Pay how much?`,
-                (amount) => {
-                    amount = parseInt(amount);
-                    if (amount > 0 && amount <= gameState.cash && amount <= gameState.debt) {
-                        gameState.cash -= amount;
-                        gameState.debt -= amount;
-                        showMessage(`Paid $${amount.toLocaleString()} to the loan shark`);
-                        updateDisplay();
-                    } else if (amount > gameState.cash) {
-                        showMessage("You don't have that much cash!");
-                    }
-                }
-            );
-        }
-        
-        // Visit bank
-        function visitBank() {
-            const action = gameState.bank > 0 ? 
-                confirm(`Bank balance: $${gameState.bank.toLocaleString()}\n\nDeposit (OK) or Withdraw (Cancel)?`) :
-                true;
-            
-            if (action) {
-                // Deposit
-                showModal(
-                    'Bank Deposit',
-                    `Cash on hand: $${gameState.cash.toLocaleString()}<br>Deposit how much?`,
-                    (amount) => {
-                        amount = parseInt(amount);
-                        if (amount > 0 && amount <= gameState.cash) {
-                            gameState.cash -= amount;
-                            gameState.bank += amount;
-                            showMessage(`Deposited $${amount.toLocaleString()}`);
-                            updateDisplay();
-                        }
-                    }
-                );
-            } else {
-                // Withdraw
-                showModal(
-                    'Bank Withdrawal',
-                    `Bank balance: $${gameState.bank.toLocaleString()}<br>Withdraw how much?`,
-                    (amount) => {
-                        amount = parseInt(amount);
-                        if (amount > 0 && amount <= gameState.bank) {
-                            gameState.bank -= amount;
-                            gameState.cash += amount;
-                            showMessage(`Withdrew $${amount.toLocaleString()}`);
-                            updateDisplay();
-                        }
-                    }
-                );
-            }
-        }
-        
-        // Visit hospital
-        function visitHospital() {
-            if (gameState.health >= 100) {
-                showMessage("You're already at full health!");
-                return;
-            }
-            
-            const healCost = (100 - gameState.health) * 100;
-            if (confirm(`Heal to full health for $${healCost.toLocaleString()}?`)) {
-                if (gameState.cash >= healCost) {
-                    gameState.cash -= healCost;
-                    gameState.health = 100;
-                    showMessage(`Healed to full health for $${healCost.toLocaleString()}`);
-                    updateDisplay();
+            // Random price events
+            if (Math.random() < 0.1) {
+                if (Math.random() < 0.5) {
+                    price = Math.floor(price * 0.2); // Cops bust - prices drop
+                    setTimeout(() => showMessage(`Cops made a big ${drug.name} bust! Prices are rock bottom!`), 100);
                 } else {
-                    showMessage("You can't afford treatment!");
+                    price = Math.floor(price * 3); // Shortage - prices soar
+                    setTimeout(() => showMessage(`${drug.name} shortage in ${gameState.location}! Prices are insane!`), 100);
                 }
+            }
+            
+            gameState.prices[drug.name] = price;
+        });
+    }
+    
+    // Calculate used space
+    function getUsedSpace() {
+        return Object.values(gameState.inventory).reduce((sum, qty) => sum + qty, 0);
+    }
+    
+    // Update display
+    function updateDisplay() {
+        document.getElementById('cash').textContent = `$${gameState.cash.toLocaleString()}`;
+        document.getElementById('debt').textContent = `$${gameState.debt.toLocaleString()}`;
+        document.getElementById('bank').textContent = `$${gameState.bank.toLocaleString()}`;
+        document.getElementById('day').textContent = `${gameState.day}/${gameState.maxDays}`;
+        document.getElementById('space').textContent = `${getUsedSpace()}/${gameState.maxSpace}`;
+        document.getElementById('health').textContent = `${gameState.health}%`;
+        document.getElementById('current-location').textContent = gameState.location;
+        
+        updateDrugList();
+        updateInventory();
+        
+        // Check game over conditions
+        if (gameState.day > gameState.maxDays) {
+            endGame();
+        }
+        if (gameState.health <= 0) {
+            showMessage("You died! Game Over!");
+            setTimeout(() => location.reload(), 3000);
+        }
+    }
+    
+    // Update drug list display
+    function updateDrugList() {
+        const drugList = document.getElementById('drug-list');
+        drugList.innerHTML = '';
+        
+        drugs.forEach(drug => {
+            const div = document.createElement('div');
+            div.className = 'drug-item';
+            const owned = gameState.inventory[drug.name] || 0;
+            div.innerHTML = `
+                <span class="drug-name">${drug.name}</span>
+                <span class="drug-price">$${gameState.prices[drug.name].toLocaleString()}</span>
+                <span class="drug-owned">Own: ${owned}</span>
+                <div class="drug-buttons">
+                    <button onclick="buyDrug('${drug.name}')">Buy</button>
+                    <button onclick="sellDrug('${drug.name}')" ${owned === 0 ? 'disabled' : ''}>Sell</button>
+                </div>
+            `;
+            drugList.appendChild(div);
+        });
+    }
+    
+    // Update inventory display
+    function updateInventory() {
+        const inventoryList = document.getElementById('inventory-list');
+        inventoryList.innerHTML = '';
+        
+        let hasItems = false;
+        for (const [drug, qty] of Object.entries(gameState.inventory)) {
+            if (qty > 0) {
+                hasItems = true;
+                const div = document.createElement('div');
+                div.className = 'inventory-item';
+                div.innerHTML = `
+                    <span>${drug}:</span>
+                    <span>${qty} units</span>
+                `;
+                inventoryList.appendChild(div);
             }
         }
         
-        // Buy coat
-        function buyCoat() {
-            if (gameState.hasCoat) {
-                showMessage("You already have a coat!");
-                return;
-            }
-            
-            const coatPrice = 200;
-            if (gameState.cash >= coatPrice) {
-                if (confirm(`Buy a coat for $${coatPrice}? (+50 carrying space)`)) {
-                    gameState.cash -= coatPrice;
-                    gameState.hasCoat = true;
-                    gameState.maxSpace += 50;
-                    showMessage("Bought a coat! +50 carrying space");
+        if (!hasItems) {
+            inventoryList.innerHTML = '<div style="text-align: center; opacity: 0.7;">Empty - buy some product!</div>';
+        }
+    }
+    
+    // Buy drug
+    function buyDrug(drugName) {
+        const price = gameState.prices[drugName];
+        const maxCanBuy = Math.floor(gameState.cash / price);
+        const spaceLeft = gameState.maxSpace - getUsedSpace();
+        const maxAfford = Math.min(maxCanBuy, spaceLeft);
+        
+        if (maxAfford === 0) {
+            showMessage(spaceLeft === 0 ? "No space left! Sell something or buy a coat!" : "You can't afford any!");
+            return;
+        }
+        
+        showModal(
+            `Buy ${drugName}`,
+            `Price: $${price.toLocaleString()} each<br>You can afford: ${maxAfford} units`,
+            (amount) => {
+                amount = parseInt(amount);
+                if (amount > 0 && amount <= maxAfford) {
+                    const cost = amount * price;
+                    gameState.cash -= cost;
+                    gameState.inventory[drugName] = (gameState.inventory[drugName] || 0) + amount;
+                    showMessage(`Bought ${amount} units of ${drugName} for $${cost.toLocaleString()}`);
                     updateDisplay();
                 }
-            } else {
-                showMessage("You can't afford a coat!");
             }
-        }
+        );
+    }
+    
+    // Sell drug
+    function sellDrug(drugName) {
+        const owned = gameState.inventory[drugName] || 0;
+        if (owned === 0) return;
         
-        // Buy gun
-        function buyGun() {
-            if (gameState.hasGun) {
-                showMessage("You already have a gun!");
-                return;
-            }
-            
-            const gunPrice = 500;
-            if (gameState.cash >= gunPrice) {
-                if (confirm(`Buy a gun for $${gunPrice}? (Protection from muggers and police)`)) {
-                    gameState.cash -= gunPrice;
-                    gameState.hasGun = true;
-                    showMessage("Bought a gun! You feel safer already.");
+        const price = gameState.prices[drugName];
+        
+        showModal(
+            `Sell ${drugName}`,
+            `Price: $${price.toLocaleString()} each<br>You have: ${owned} units`,
+            (amount) => {
+                amount = parseInt(amount);
+                if (amount > 0 && amount <= owned) {
+                    const revenue = amount * price;
+                    gameState.cash += revenue;
+                    gameState.inventory[drugName] -= amount;
+                    if (gameState.inventory[drugName] === 0) {
+                        delete gameState.inventory[drugName];
+                    }
+                    showMessage(`Sold ${amount} units of ${drugName} for $${revenue.toLocaleString()}`);
                     updateDisplay();
                 }
-            } else {
-                showMessage("You can't afford a gun!");
             }
-        }
+        );
+    }
+    
+    // Show travel menu
+    function showTravelMenu() {
+        const modal = document.getElementById('travel-modal');
+        const options = document.getElementById('travel-options');
+        options.innerHTML = '';
         
-        // Show message
-        function showMessage(text) {
-            const messageEl = document.getElementById('message');
-            messageEl.innerHTML = text;
-            messageEl.classList.add('flash');
-            setTimeout(() => messageEl.classList.remove('flash'), 500);
-        }
-        
-        // Modal functions
-        function showModal(title, text, onConfirm) {
-            const modal = document.getElementById('modal');
-            document.getElementById('modal-title').textContent = title;
-            document.getElementById('modal-text').innerHTML = text;
-            const input = document.getElementById('modal-input');
-            input.value = '';
-            
-            document.getElementById('modal-confirm').onclick = () => {
-                onConfirm(input.value);
-                closeModal();
-            };
-            
-            modal.style.display = 'flex';
-            input.focus();
-        }
-        
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-        
-        function closeTravelModal() {
-            document.getElementById('travel-modal').style.display = 'none';
-        }
-        
-        function showInfo() {
-            document.getElementById('info-modal').style.display = 'flex';
-        }
-        
-        function closeInfoModal() {
-            document.getElementById('info-modal').style.display = 'none';
-        }
-        
-        // End game
-        function endGame() {
-            const netWorth = gameState.cash + gameState.bank - gameState.debt;
-            let rating = '';
-            
-            if (netWorth < 0) rating = 'Street Junkie';
-            else if (netWorth < 10000) rating = 'Small Time Dealer';
-            else if (netWorth < 50000) rating = 'Neighborhood Supplier';
-            else if (netWorth < 100000) rating = 'Drug Lord';
-            else if (netWorth < 500000) rating = 'Kingpin';
-            else rating = 'Pablo Escobar';
-            
-            alert(`GAME OVER!\n\nFinal Stats:\nCash: $${gameState.cash.toLocaleString()}\nBank: $${gameState.bank.toLocaleString()}\nDebt: $${gameState.debt.toLocaleString()}\n\nNet Worth: $${netWorth.toLocaleString()}\nRating: ${rating}\n\nPlay again?`);
-            
-            location.reload();
-        }
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-                closeTravelModal();
-                closeInfoModal();
+        locations.forEach(loc => {
+            if (loc !== gameState.location) {
+                const btn = document.createElement('button');
+                btn.textContent = loc;
+                btn.style.width = '100%';
+                btn.style.marginBottom = '10px';
+                btn.onclick = () => travel(loc);
+                options.appendChild(btn);
             }
         });
         
-        // Prevent double-tap zoom on iOS
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', (e) => {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                e.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
+        modal.style.display = 'flex';
+    }
+    
+    // Travel to new location
+    function travel(destination) {
+        closeTravelModal();
+        gameState.location = destination;
+        gameState.day++;
         
-        // Initialize game on load
-        initGame();
-    </script>
+        // Interest on debt
+        gameState.debt = Math.floor(gameState.debt * 1.1);
+        
+        // Update prices for new location
+        updatePrices();
+        
+        // Random events
+        if (Math.random() < 0.3) {
+            randomEvent();
+        }
+        
+        showMessage(`Traveled to ${destination}. Day ${gameState.day}`);
+        updateDisplay();
+    }
+    
+    // Random events
+    function randomEvent() {
+        const events = [
+            () => {
+                // Police encounter
+                if (getUsedSpace() > 50) {
+                    if (gameState.hasGun && Math.random() < 0.5) {
+                        showMessage("Police tried to search you but you scared them off with your gun!");
+                    } else {
+                        const fine = Math.floor(gameState.cash * 0.2);
+                        gameState.cash = Math.max(0, gameState.cash - fine);
+                        const healthLoss = Math.floor(Math.random() * 20) + 10;
+                        gameState.health -= healthLoss;
+                        showMessage(`Police roughed you up! Lost $${fine.toLocaleString()} and ${healthLoss} health!`);
+                    }
+                }
+            },
+            () => {
+                // Find drugs
+                const drug = drugs[Math.floor(Math.random() * drugs.length)];
+                const amount = Math.floor(Math.random() * 8) + 1;
+                const spaceLeft = gameState.maxSpace - getUsedSpace();
+                if (spaceLeft >= amount) {
+                    gameState.inventory[drug.name] = (gameState.inventory[drug.name] || 0) + amount;
+                    showMessage(`You found ${amount} units of ${drug.name} on the ground!`);
+                }
+            },
+            () => {
+                // Mugging
+                if (!gameState.hasGun && Math.random() < 0.5) {
+                    const loss = Math.floor(gameState.cash * 0.15);
+                    gameState.cash = Math.max(0, gameState.cash - loss);
+                    gameState.health -= 15;
+                    showMessage(`You got mugged! Lost $${loss.toLocaleString()} and 15 health!`);
+                } else if (gameState.hasGun) {
+                    showMessage("Someone tried to mug you but ran away when they saw your gun!");
+                }
+            },
+            () => {
+                // Find cash
+                const found = Math.floor(Math.random() * 1000) + 100;
+                gameState.cash += found;
+                showMessage(`You found $${found.toLocaleString()} in a wallet on the street!`);
+            }
+        ];
+        
+        events[Math.floor(Math.random() * events.length)]();
+    }
+    
+    // Visit loan shark
+    function visitLoanShark() {
+        showModal(
+            'Loan Shark',
+            `Current debt: $${gameState.debt.toLocaleString()}<br>Pay how much?`,
+            (amount) => {
+                amount = parseInt(amount);
+                if (amount > 0 && amount <= gameState.cash && amount <= gameState.debt) {
+                    gameState.cash -= amount;
+                    gameState.debt -= amount;
+                    showMessage(`Paid $${amount.toLocaleString()} to the loan shark`);
+                    updateDisplay();
+                } else if (amount > gameState.cash) {
+                    showMessage("You don't have that much cash!");
+                }
+            }
+        );
+    }
+    
+    // Visit bank
+    function visitBank() {
+        const action = gameState.bank > 0 ? 
+            confirm(`Bank balance: $${gameState.bank.toLocaleString()}\n\nDeposit (OK) or Withdraw (Cancel)?`) :
+            true;
+        
+        if (action) {
+            // Deposit
+            showModal(
+                'Bank Deposit',
+                `Cash on hand: $${gameState.cash.toLocaleString()}<br>Deposit how much?`,
+                (amount) => {
+                    amount = parseInt(amount);
+                    if (amount > 0 && amount <= gameState.cash) {
+                        gameState.cash -= amount;
+                        gameState.bank += amount;
+                        showMessage(`Deposited $${amount.toLocaleString()}`);
+                        updateDisplay();
+                    }
+                }
+            );
+        } else {
+            // Withdraw
+            showModal(
+                'Bank Withdrawal',
+                `Bank balance: $${gameState.bank.toLocaleString()}<br>Withdraw how much?`,
+                (amount) => {
+                    amount = parseInt(amount);
+                    if (amount > 0 && amount <= gameState.bank) {
+                        gameState.bank -= amount;
+                        gameState.cash += amount;
+                        showMessage(`Withdrew $${amount.toLocaleString()}`);
+                        updateDisplay();
+                    }
+                }
+            );
+        }
+    }
+    
+    // Visit hospital
+    function visitHospital() {
+        if (gameState.health >= 100) {
+            showMessage("You're already at full health!");
+            return;
+        }
+        
+        const healCost = (100 - gameState.health) * 100;
+        if (confirm(`Heal to full health for $${healCost.toLocaleString()}?`)) {
+            if (gameState.cash >= healCost) {
+                gameState.cash -= healCost;
+                gameState.health = 100;
+                showMessage(`Healed to full health for $${healCost.toLocaleString()}`);
+                updateDisplay();
+            } else {
+                showMessage("You can't afford treatment!");
+            }
+        }
+    }
+    
+    // Buy coat
+    function buyCoat() {
+        if (gameState.hasCoat) {
+            showMessage("You already have a coat!");
+            return;
+        }
+        
+        const coatPrice = 200;
+        if (gameState.cash >= coatPrice) {
+            if (confirm(`Buy a coat for $${coatPrice}? (+50 carrying space)`)) {
+                gameState.cash -= coatPrice;
+                gameState.hasCoat = true;
+                gameState.maxSpace += 50;
+                showMessage("Bought a coat! +50 carrying space");
+                updateDisplay();
+            }
+        } else {
+            showMessage("You can't afford a coat!");
+        }
+    }
+    
+    // Buy gun
+    function buyGun() {
+        if (gameState.hasGun) {
+            showMessage("You already have a gun!");
+            return;
+        }
+        
+        const gunPrice = 500;
+        if (gameState.cash >= gunPrice) {
+            if (confirm(`Buy a gun for $${gunPrice}? (Protection from muggers and police)`)) {
+                gameState.cash -= gunPrice;
+                gameState.hasGun = true;
+                showMessage("Bought a gun! You feel safer already.");
+                updateDisplay();
+            }
+        } else {
+            showMessage("You can't afford a gun!");
+        }
+    }
+    
+    // Show message
+    function showMessage(text) {
+        const messageEl = document.getElementById('message');
+        messageEl.innerHTML = text;
+        messageEl.classList.add('flash');
+        setTimeout(() => messageEl.classList.remove('flash'), 500);
+    }
+    
+    // Modal functions
+    function showModal(title, text, onConfirm) {
+        const modal = document.getElementById('modal');
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-text').innerHTML = text;
+        const input = document.getElementById('modal-input');
+        input.value = '';
+        
+        document.getElementById('modal-confirm').onclick = () => {
+            onConfirm(input.value);
+            closeModal();
+        };
+        
+        modal.style.display = 'flex';
+        // Don't auto-focus on mobile to prevent keyboard popup
+        if (window.innerWidth > 768) {
+            input.focus();
+        }
+    }
+    
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+    }
+    
+    function closeTravelModal() {
+        document.getElementById('travel-modal').style.display = 'none';
+    }
+    
+    function showInfo() {
+        document.getElementById('info-modal').style.display = 'flex';
+    }
+    
+    function closeInfoModal() {
+        document.getElementById('info-modal').style.display = 'none';
+    }
+    
+    // End game
+    function endGame() {
+        const netWorth = gameState.cash + gameState.bank - gameState.debt;
+        let rating = '';
+        
+        if (netWorth < 0) rating = 'Street Junkie';
+        else if (netWorth < 10000) rating = 'Small Time Dealer';
+        else if (netWorth < 50000) rating = 'Neighborhood Supplier';
+        else if (netWorth < 100000) rating = 'Drug Lord';
+        else if (netWorth < 500000) rating = 'Kingpin';
+        else rating = 'Pablo Escobar';
+        
+        alert(`GAME OVER!\n\nFinal Stats:\nCash: $${gameState.cash.toLocaleString()}\nBank: $${gameState.bank.toLocaleString()}\nDebt: $${gameState.debt.toLocaleString()}\n\nNet Worth: $${netWorth.toLocaleString()}\nRating: ${rating}\n\nPlay again?`);
+        
+        location.reload();
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            closeTravelModal();
+            closeInfoModal();
+        }
+    });
+    
+    // Prevent double-tap zoom
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+    
+    // Prevent pinch zoom
+    document.addEventListener('touchstart', function(event) {
+        if (event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Initialize game on load
+    initGame();
+</script>
+```
+
 </body>
 </html>
