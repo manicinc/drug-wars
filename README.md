@@ -15,6 +15,7 @@ Originally created by John E. Dell in 1984, this remake brings the classic gamep
 ## 🎯 Features
 
 - **Classic Gameplay**: Faithful to the original with all core mechanics
+- **Full Keyboard Control Support**: Classic keyboard controls MS-DOS style
 - **6 NYC Locations**: Travel between Bronx, Ghetto, Central Park, Manhattan, Coney Island, and Brooklyn
 - **Dynamic Pricing**: Watch for police busts and shortages that affect prices
 - **Random Events**: Encounter police, find drugs/cash, or get mugged while traveling
