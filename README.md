@@ -1,6 +1,6 @@
 # Drug Wars Remake
 
-A modern, mobile-responsive web remake of the classic 1984 Drug Wars game. Built with vanilla JavaScript, HTML5, and CSS3, using Claude Opus 4 in a single one-shot prompt. Runs in a single file.
+A modern, mobile-responsive web remake of the classic 1984 Drug Wars game. Built with vanilla JavaScript, HTML5, and CSS3, originally built using Claude Opus 4 in a single one-shot prompt (improvements were added later in further commits). Runs in a single file.
 
 ## 🎮 Play Now
 
@@ -48,4 +48,3 @@ Your final net worth determines your ranking:
 - Original Drug Wars by John E. Dell (1984)
 - Remake by [manic.agency](https://manic.agency)
 - Inspired by the classic DOS/BBS game culture
-- One-shot prompt code generated from Claude
