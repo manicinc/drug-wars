@@ -1,0 +1,26 @@
+{
+  "name": "drug-wars",
+  "version": "1.0.0",
+  "description": "Drug Wars Game",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'No build needed for static HTML'",
+    "cap:sync": "npx cap sync",
+    "cap:run:android": "npx cap run android",
+    "cap:run:ios": "npx cap run ios",
+    "cap:build:android": "npx cap build android",
+    "cap:build:ios": "npx cap build ios",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.6.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@capacitor-community/electron": "^5.0.1",
+    "@capacitor/android": "^5.6.0",
+    "@capacitor/core": "^5.6.0",
+    "@capacitor/ios": "^5.6.0"
+  }
+}
