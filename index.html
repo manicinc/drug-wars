@@ -1,5 +1,4 @@
-<!-- TODO: Config nginx to serve this file from www and delete this -->
-
+<!-- TODO: MOve this to www -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -778,6 +777,7 @@
                     <li><strong>Painkillers ($25):</strong> Consumable, +10 health, stackable</li>
                     <li><strong>First Aid Kit ($50):</strong> Consumable, +20 health, stackable</li>
                     <li><strong>Trench Coat ($200):</strong> +50 carrying space, can get damaged</li>
+                    <li><strong>Duffel Bag ($400):</strong> +75 carrying space, can get damaged</li>
                     <li><strong>Gun ($500):</strong> Protection from danger, can misfire over time</li>
                 </ul>
                 
@@ -822,6 +822,7 @@
             items: {
                 gun: { owned: false, broken: false, durability: 100 },
                 coat: { owned: false, broken: false, durability: 100 },
+                duffelBag: { owned: false, broken: false, durability: 100 },
                 armor: { owned: false, broken: false, durability: 100 },
                 fakeId: { owned: false, broken: false, durability: 100 },
                 phone: { owned: false, broken: false, durability: 100 },
@@ -900,6 +901,15 @@
                 price: 200,
                 effect: '+50 Space',
                 description: 'Increases carrying capacity',
+                consumable: false,
+                durability: true
+            },
+            {
+                id: 'duffelBag',
+                name: 'Duffel Bag',
+                price: 400,
+                effect: '+75 Space',
+                description: 'Large carrying capacity boost',
                 consumable: false,
                 durability: true
             },
@@ -1006,8 +1016,11 @@
                     
                     // Special effects when items break
                     if (itemId === 'coat') {
-                        gameState.maxSpace -= 50;
+                        gameState.maxSpace = getMaxSpace();
                         showMessage("Lost 50 carrying space from broken coat!");
+                    } else if (itemId === 'duffelBag') {
+                        gameState.maxSpace = getMaxSpace();
+                        showMessage("Lost 75 carrying space from broken duffel bag!");
                     }
                 }
             }
@@ -1050,6 +1063,9 @@
             let maxSpace = 100;
             if (gameState.items.coat.owned && !gameState.items.coat.broken) {
                 maxSpace += 50;
+            }
+            if (gameState.items.duffelBag.owned && !gameState.items.duffelBag.broken) {
+                maxSpace += 75;
             }
             return maxSpace;
         }
@@ -1176,7 +1192,7 @@
                 gameState.items[itemId].durability = 100;
                 
                 // Apply special effects
-                if (itemId === 'coat') {
+                if (itemId === 'coat' || itemId === 'duffelBag') {
                     gameState.maxSpace = getMaxSpace();
                 }
                 
