@@ -10,6 +10,17 @@
     <meta name="keywords" content="Drug Wars, remake, game, classic, enhanced, HTML5, JavaScript">
     <meta name="author" content="Enhanced by Claude">
     <title>Drug Wars Remake</title>
+
+    
+     <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '__GA_MEASUREMENT_ID__');
+</script>
     
     <style>
         * {
@@ -532,6 +543,16 @@
             margin-bottom: 5px;
         }
         
+        .info-content a {
+            color: #00ff00;
+            text-decoration: underline;
+        }
+        
+        .info-content a:hover {
+            color: #ffff00;
+            text-decoration: none;
+        }
+        
         .skip-link {
             position: absolute;
             top: -40px;
@@ -924,6 +945,7 @@
             <div class="info-content">
                 <h4>🎮 About</h4>
                 <p>An enhanced version of the classic Drug Wars with deeper health and item mechanics. Your health now affects every aspect of the game!</p>
+                <p>Created by <a href="https://manic.agency/" target="_blank">manic.agency</a> - Check out our <a href="https://games.manic.agency/" target="_blank">other text-based games</a>!</p>
                 
                 <h4>💊 Health System</h4>
                 <ul>
@@ -1411,11 +1433,15 @@
         // Enhanced random events with health and item effects
         function randomEvent() {
             const riskMultiplier = getHealthRiskMultiplier();
-            const baseEventChance = 0.3 * riskMultiplier;
+            const baseEventChance = 0.5 * riskMultiplier; // Increased from 0.3
             
             if (Math.random() > baseEventChance) return;
             
+            // More combat encounters
             const events = [
+                () => combatEncounter(),
+                () => combatEncounter(),
+                () => combatEncounter(),
                 () => {
                     // Police encounter with enhanced mechanics
                     if (getUsedSpace() > 30) {
@@ -1452,40 +1478,13 @@
                         if (gameState.items.armor.owned && !gameState.items.armor.broken) {
                             healthLoss = Math.floor(healthLoss * 0.5);
                             damageItem('armor', 30);
-                            showMessage(`Police beat you up but your armor helped! Lost $${fine.toLocaleString()} and ${healthLoss} health.`);
+                            showMessage(`Police beat you up but your armor helped! Lost ${fine.toLocaleString()} and ${healthLoss} health.`);
                         } else {
-                            showMessage(`Police roughed you up badly! Lost $${fine.toLocaleString()} and ${healthLoss} health!`);
+                            showMessage(`Police roughed you up badly! Lost ${fine.toLocaleString()} and ${healthLoss} health!`);
                         }
                         
                         gameState.health = Math.max(0, gameState.health - healthLoss);
                     }
-                },
-                () => {
-                    // Enhanced mugging with item effects
-                    let mugged = true;
-                    
-                    // Gun protection
-                    if (gameState.items.gun.owned && !gameState.items.gun.broken && Math.random() < 0.7) {
-                        showMessage("Muggers tried to rob you but ran when they saw your gun!");
-                        damageItem('gun', 10);
-                        return;
-                    }
-                    
-                    const loss = Math.floor(gameState.cash * (0.15 + (1 - getHealthMultiplier()) * 0.1));
-                    gameState.cash = Math.max(0, gameState.cash - loss);
-                    
-                    let healthLoss = Math.floor(Math.random() * 20) + 10;
-                    
-                    // Body armor protection
-                    if (gameState.items.armor.owned && !gameState.items.armor.broken) {
-                        healthLoss = Math.floor(healthLoss * 0.5);
-                        damageItem('armor', 25);
-                        showMessage(`Got mugged but your armor helped! Lost $${loss.toLocaleString()} and ${healthLoss} health.`);
-                    } else {
-                        showMessage(`Got mugged badly! Lost $${loss.toLocaleString()} and ${healthLoss} health!`);
-                    }
-                    
-                    gameState.health = Math.max(0, gameState.health - healthLoss);
                 },
                 () => {
                     // Find drugs
@@ -1501,7 +1500,7 @@
                     // Find cash
                     const found = Math.floor(Math.random() * 1000) + 100;
                     gameState.cash += found;
-                    showMessage(`Found $${found.toLocaleString()} in a wallet!`);
+                    showMessage(`Found ${found.toLocaleString()} in a wallet!`);
                 },
                 () => {
                     // Health event - overdose customer
@@ -1514,6 +1513,202 @@
             ];
             
             events[Math.floor(Math.random() * events.length)]();
+        }
+        
+        // New combat encounter system
+        function combatEncounter() {
+            const encounterTypes = [
+                { name: "Street Thug", minDamage: 5, maxDamage: 15, cashLoss: 0.05, description: "A desperate junkie", emoji: "🔪" },
+                { name: "Rival Dealer", minDamage: 10, maxDamage: 25, cashLoss: 0.1, description: "A competing dealer", emoji: "💊" },
+                { name: "Gang Member", minDamage: 15, maxDamage: 30, cashLoss: 0.15, description: "A dangerous gang member", emoji: "🗡️" },
+                { name: "Loan Shark Enforcer", minDamage: 20, maxDamage: 40, cashLoss: 0.2, description: "Someone collecting debts", emoji: "💀" },
+                { name: "Territory Boss", minDamage: 25, maxDamage: 50, cashLoss: 0.25, description: "A powerful territory leader", emoji: "👑" }
+            ];
+            
+            // Encounter severity based on day (early days = easier encounters)
+            const dayFactor = Math.min(gameState.day / 15, 1); // Max difficulty at day 15
+            const maxEncounterLevel = Math.floor(dayFactor * encounterTypes.length);
+            const encounterIndex = Math.floor(Math.random() * (maxEncounterLevel + 1));
+            const encounter = encounterTypes[Math.min(encounterIndex, encounterTypes.length - 1)];
+            
+            // Calculate win chance
+            let winChance = 0.3; // Base 30% chance even with no items
+            
+            // Early game bonus (first 10 days get easier encounters)
+            if (gameState.day <= 10) {
+                winChance += 0.4; // 70% base chance early game
+            }
+            
+            // Item bonuses
+            let itemBonus = "";
+            if (gameState.items.gun.owned && !gameState.items.gun.broken) {
+                winChance += 0.5; // Gun gives big advantage
+                itemBonus += "🔫 Gun (+50%) ";
+            }
+            if (gameState.items.armor.owned && !gameState.items.armor.broken) {
+                winChance += 0.2; // Armor helps with confidence
+                itemBonus += "🛡️ Armor (+20%) ";
+            }
+            if (gameState.items.fakeId.owned && !gameState.items.fakeId.broken) {
+                winChance += 0.1; // Fake ID means less to lose
+                itemBonus += "🆔 Fake ID (+10%) ";
+            }
+            
+            // Health affects performance
+            const healthMultiplier = getHealthMultiplier();
+            winChance *= healthMultiplier;
+            
+            // Cap win chance
+            winChance = Math.min(winChance, 0.95);
+            
+            // Show combat modal
+            showCombatModal(encounter, winChance, itemBonus, healthMultiplier);
+        }
+        
+        function showCombatModal(encounter, winChance, itemBonus, healthMultiplier) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modal-title').innerHTML = `⚔️ COMBAT ENCOUNTER!`;
+            
+            const winPercentage = Math.round(winChance * 100);
+            const healthStatus = healthMultiplier < 0.8 ? `⚠️ Your poor health reduces your combat effectiveness!` : "";
+            
+            document.getElementById('modal-text').innerHTML = `
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">${encounter.emoji}</div>
+                    <div style="color: #ff8800; font-weight: bold; margin-bottom: 5px;">${encounter.name}</div>
+                    <div style="font-size: 0.9em; margin-bottom: 15px;">${encounter.description}</div>
+                    
+                    <div style="background: #1a1a1a; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                        <div style="color: #ffff00; margin-bottom: 5px;"><strong>Win Chance: ${winPercentage}%</strong></div>
+                        ${itemBonus ? `<div style="color: #00ff00; font-size: 0.8em;">${itemBonus}</div>` : ""}
+                        ${healthStatus ? `<div style="color: #ff0000; font-size: 0.8em;">${healthStatus}</div>` : ""}
+                    </div>
+                    
+                    <div style="font-size: 0.9em; color: #888;">
+                        Potential damage: ${encounter.minDamage}-${encounter.maxDamage} health<br>
+                        Potential cash loss: ${Math.round(encounter.cashLoss * 100)}% of current cash
+                    </div>
+                </div>
+            `;
+            
+            // Hide the input field for combat
+            document.getElementById('modal-input').style.display = 'none';
+            
+            // Set up fight button
+            document.getElementById('modal-confirm').textContent = '⚔️ FIGHT!';
+            document.getElementById('modal-confirm').onclick = () => {
+                closeModal();
+                resolveCombat(encounter, winChance);
+            };
+            
+            modal.style.display = 'flex';
+            
+            // Focus the fight button
+            setTimeout(() => {
+                document.getElementById('modal-confirm').focus();
+            }, 100);
+        }
+        
+        function resolveCombat(encounter, winChance) {
+            // Reset modal input display for future use
+            document.getElementById('modal-input').style.display = 'block';
+            document.getElementById('modal-confirm').textContent = 'Confirm';
+            
+            if (Math.random() < winChance) {
+                // Player wins!
+                combatVictory(encounter);
+            } else {
+                // Player loses
+                combatDefeat(encounter);
+            }
+            
+            updateDisplay();
+        }
+        
+        function combatVictory(encounter) {
+            const rewards = [
+                () => {
+                    const cashFound = Math.floor(Math.random() * 500) + 100;
+                    gameState.cash += cashFound;
+                    showMessage(`💪 You defeated ${encounter.description}! Found ${cashFound.toLocaleString()} on them!`);
+                },
+                () => {
+                    const drug = drugs[Math.floor(Math.random() * drugs.length)];
+                    const amount = Math.floor(Math.random() * 5) + 1;
+                    const spaceLeft = getMaxSpace() - getUsedSpace();
+                    if (spaceLeft >= amount) {
+                        gameState.inventory[drug.name] = (gameState.inventory[drug.name] || 0) + amount;
+                        showMessage(`💪 You defeated ${encounter.description}! Took their ${amount} units of ${drug.name}!`);
+                    } else {
+                        const cashFound = Math.floor(Math.random() * 300) + 50;
+                        gameState.cash += cashFound;
+                        showMessage(`💪 You defeated ${encounter.description}! No space for their drugs, took ${cashFound.toLocaleString()} instead!`);
+                    }
+                },
+                () => {
+                    showMessage(`💪 You defeated ${encounter.description}! They ran away before you could take anything, but you feel confident! +5 health`);
+                    gameState.health = Math.min(100, gameState.health + 5);
+                },
+                () => {
+                    const infoGain = Math.random() < 0.3;
+                    if (infoGain) {
+                        showMessage(`💪 You defeated ${encounter.description}! They told you about a police raid tomorrow - stay alert!`);
+                    } else {
+                        const cashFound = Math.floor(Math.random() * 200) + 25;
+                        gameState.cash += cashFound;
+                        showMessage(`💪 You defeated ${encounter.description}! Found ${cashFound.toLocaleString()} in their pocket!`);
+                    }
+                }
+            ];
+            
+            // Minor item damage from combat (even when winning)
+            if (gameState.items.gun.owned && !gameState.items.gun.broken && Math.random() < 0.2) {
+                damageItem('gun', 5);
+            }
+            if (gameState.items.armor.owned && !gameState.items.armor.broken && Math.random() < 0.3) {
+                damageItem('armor', 10);
+            }
+            
+            rewards[Math.floor(Math.random() * rewards.length)]();
+        }
+        
+        function combatDefeat(encounter) {
+            let healthLoss = Math.floor(Math.random() * (encounter.maxDamage - encounter.minDamage + 1)) + encounter.minDamage;
+            let cashLoss = Math.floor(gameState.cash * encounter.cashLoss);
+            
+            // Item protection
+            if (gameState.items.armor.owned && !gameState.items.armor.broken) {
+                healthLoss = Math.floor(healthLoss * 0.5);
+                damageItem('armor', 25);
+                showMessage(`⚔️ ${encounter.description} attacked you! Your armor absorbed some damage. Lost ${healthLoss} health and ${cashLoss.toLocaleString()}.`);
+            } else {
+                showMessage(`⚔️ ${encounter.description} attacked you! Lost ${healthLoss} health and ${cashLoss.toLocaleString()}!`);
+            }
+            
+            // Gun might still help reduce damage even when losing
+            if (gameState.items.gun.owned && !gameState.items.gun.broken && Math.random() < 0.3) {
+                healthLoss = Math.floor(healthLoss * 0.7);
+                cashLoss = Math.floor(cashLoss * 0.7);
+                damageItem('gun', 15);
+                showMessage(`Your gun helped you fight back and reduce the damage!`);
+            }
+            
+            gameState.health = Math.max(0, gameState.health - healthLoss);
+            gameState.cash = Math.max(0, gameState.cash - cashLoss);
+            
+            // Chance to lose some inventory in severe defeats
+            if (healthLoss > 25 && Math.random() < 0.3) {
+                const inventoryKeys = Object.keys(gameState.inventory).filter(drug => gameState.inventory[drug] > 0);
+                if (inventoryKeys.length > 0) {
+                    const lostDrug = inventoryKeys[Math.floor(Math.random() * inventoryKeys.length)];
+                    const lostAmount = Math.min(Math.floor(gameState.inventory[lostDrug] * 0.3), 5);
+                    gameState.inventory[lostDrug] -= lostAmount;
+                    if (gameState.inventory[lostDrug] <= 0) {
+                        delete gameState.inventory[lostDrug];
+                    }
+                    showMessage(`They also stole ${lostAmount} units of ${lostDrug} from you!`);
+                }
+            }
         }
         
         // Travel with enhanced mechanics
@@ -1531,8 +1726,10 @@
             // Update prices for new location
             updatePrices();
             
-            // Random events with health consideration
-            randomEvent();
+            // Random events - now guaranteed to have a chance every travel
+            if (Math.random() < 0.8) { // 80% chance of some event
+                randomEvent();
+            }
             
             showMessage(`Traveled to ${destination}. Day ${gameState.day}. Health: ${gameState.health}%`);
             updateDisplay();
