@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.manic.drugwars',
+  appId: 'com.manicinc.drugwars',
   appName: 'Drug Wars',
   webDir: 'www',
   server: {

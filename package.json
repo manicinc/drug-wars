@@ -27,7 +27,7 @@
       "productName": "DrugWars",
       "publish": {
           "provider": "github",
-          "owner": "your-github-username",
+          "owner": "manicinc",
           "repo": "drugwars"
       }
   }
