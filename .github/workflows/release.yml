@@ -82,10 +82,19 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-
-      - name: Fix app-builder permissions (Linux only)
+      - name: Debug and rebuild native modules (Linux only)
         if: runner.os == 'Linux'
-        run: chmod +x node_modules/app-builder-bin/linux/x64/app-builder
+        run: |
+          echo "Checking app-builder permissions and existence:"
+          ls -la node_modules/app-builder-bin/linux/x64/ || echo "x64 directory not found"
+          ls -la node_modules/app-builder-bin/linux/arm64/ || echo "arm64 directory not found"
+          
+          # Force rebuild native modules
+          npm rebuild
+          
+          # Ensure all binaries are executable
+          find node_modules -name "*.node" -exec chmod +x {} \; || true
+          find node_modules -type f -executable -exec chmod +x {} \; || true
 
       - name: Build and Publish Electron Application
         run: npm run release:electron
