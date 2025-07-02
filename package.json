@@ -1,34 +1,34 @@
 {
-  "name": "drugwars",
-  "version": "0.1.0",
-  "description": "The DrugWars desktop application.",
-  "author": "Your Name",
-  "license": "MIT",
-  "private": true,
-  "main": "electron.js",
-  "scripts": {
-      "start": "npx electron .",
-      "pack": "electron-builder --dir",
-      "release": "standard-version",
-      "release:electron": "electron-builder --publish always",
-      "postinstall": "electron-builder install-app-deps"
-  },
-  "dependencies": {
-      "electron-log": "^5.1.5",
-      "electron-updater": "^6.2.1"
-  },
-  "devDependencies": {
-      "electron": "^29.1.5",
-      "electron-builder": "^24.13.3",
-      "standard-version": "^9.5.0"
-  },
-  "build": {
-      "appId": "com.manicinc.drugwars",
-      "productName": "DrugWars",
-      "publish": {
-          "provider": "github",
-          "owner": "manicinc",
-          "repo": "drugwars"
-      }
-  }
+    "name": "drugwars",
+    "version": "0.1.1",
+    "description": "The DrugWars desktop application.",
+    "author": "Your Name",
+    "license": "MIT",
+    "private": true,
+    "main": "electron.js",
+    "scripts": {
+        "start": "npx electron .",
+        "pack": "electron-builder --dir",
+        "release": "standard-version",
+        "release:electron": "electron-builder --publish always",
+        "postinstall": "electron-builder install-app-deps"
+    },
+    "dependencies": {
+        "electron-log": "^5.1.5",
+        "electron-updater": "^6.2.1"
+    },
+    "devDependencies": {
+        "electron": "^29.1.5",
+        "electron-builder": "^24.13.3",
+        "standard-version": "^9.5.0"
+    },
+    "build": {
+        "appId": "com.manicinc.drugwars",
+        "productName": "DrugWars",
+        "publish": {
+            "provider": "github",
+            "owner": "manicinc",
+            "repo": "drugwars"
+        }
+    }
 }
