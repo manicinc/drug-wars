@@ -48,6 +48,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get version from package.json
+        id: get_version
+        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Snapcraft
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo snap install snapcraft --classic
+
       - name: Build and Publish Electron Application
         run: npm run release:electron
         env:
