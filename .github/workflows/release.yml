@@ -86,7 +86,9 @@ jobs:
           rm -rf node_modules package-lock.json
 
       - name: Install Dependencies
-        run: npm ci
+        run: /
+          npm install
+          npm ci
 
       - name: Debug and rebuild native modules (Linux only)
         if: runner.os == 'Linux'
