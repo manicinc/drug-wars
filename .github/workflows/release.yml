@@ -12,7 +12,7 @@ permissions:
   actions: write
 
 jobs:
-  release:
+  release_and_publish:
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -43,38 +43,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push changes and tag
-        run: git push --follow-tags origin HEAD:${{ github.ref_name }}
+        run: |
+          git push --follow-tags origin HEAD
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ steps.get_version.outputs.VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build_and_publish:
-    needs: release
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm ci
 
       - name: Build and Publish Electron Application
-        run: |
-          npm run release:electron
+        run: npm run release:electron
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
