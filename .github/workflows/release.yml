@@ -75,9 +75,7 @@ jobs:
         run: npm ci
 
       - name: Build and Publish Electron Application
-        if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo snap install snapcraft --classic
           npm run release:electron
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
