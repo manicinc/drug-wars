@@ -1,6 +1,6 @@
 {
     "name": "drugwars",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "The DrugWars desktop application.",
     "author": "Your Name",
     "license": "MIT",
@@ -48,7 +48,9 @@
             "target": [
                 {
                     "target": "AppImage",
-                    "arch": ["x64"]
+                    "arch": [
+                        "x64"
+                    ]
                 }
             ],
             "category": "Game",
