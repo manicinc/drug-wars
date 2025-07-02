@@ -82,11 +82,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Install Snapcraft (only on Ubuntu)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt update
-          sudo snap install snapcraft --classic
 
       - name: Fix app-builder permissions (Linux only)
         if: runner.os == 'Linux'
