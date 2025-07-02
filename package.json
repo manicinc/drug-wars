@@ -1,26 +1,34 @@
 {
-  "name": "drug-wars",
-  "version": "1.0.0",
-  "description": "Drug Wars Game",
-  "main": "index.html",
+  "name": "drugwars",
+  "version": "0.1.0",
+  "description": "The DrugWars desktop application.",
+  "author": "Your Name",
+  "license": "MIT",
+  "private": true,
+  "main": "electron.js",
   "scripts": {
-    "build": "echo 'No build needed for static HTML'",
-    "cap:sync": "npx cap sync",
-    "cap:run:android": "npx cap run android",
-    "cap:run:ios": "npx cap run ios",
-    "cap:build:android": "npx cap build android",
-    "cap:build:ios": "npx cap build ios",
-    "cap:open:android": "npx cap open android",
-    "cap:open:ios": "npx cap open ios"
-  },
-  "devDependencies": {
-    "@capacitor/cli": "^5.6.0",
-    "typescript": "^5.8.3"
+      "start": "npx electron .",
+      "pack": "electron-builder --dir",
+      "release": "standard-version",
+      "release:electron": "electron-builder --publish always",
+      "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "@capacitor-community/electron": "^5.0.1",
-    "@capacitor/android": "^5.6.0",
-    "@capacitor/core": "^5.6.0",
-    "@capacitor/ios": "^5.6.0"
+      "electron-log": "^5.1.5",
+      "electron-updater": "^6.2.1"
+  },
+  "devDependencies": {
+      "electron": "^29.1.5",
+      "electron-builder": "^24.13.3",
+      "standard-version": "^9.5.0"
+  },
+  "build": {
+      "appId": "com.manicinc.drugwars",
+      "productName": "DrugWars",
+      "publish": {
+          "provider": "github",
+          "owner": "your-github-username",
+          "repo": "drugwars"
+      }
   }
 }

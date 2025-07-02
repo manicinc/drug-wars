@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Drug Wars</string>
-    <string name="title_activity_main">Drug Wars</string>
-    <string name="package_name">com.manic.drugwars</string>
-    <string name="custom_url_scheme">com.manic.drugwars</string>
-</resources>
