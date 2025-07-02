@@ -84,11 +84,10 @@ jobs:
         run: |
           npm cache clean --force
           rm -rf node_modules package-lock.json
+          npm install
 
       - name: Install Dependencies
-        run: /
-          npm install
-          npm ci
+        run: npm ci
 
       - name: Debug and rebuild native modules (Linux only)
         if: runner.os == 'Linux'
