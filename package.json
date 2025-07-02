@@ -1,6 +1,6 @@
 {
     "name": "drugwars",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "The DrugWars desktop application.",
     "author": "Your Name",
     "license": "MIT",
@@ -28,7 +28,7 @@
         "publish": {
             "provider": "github",
             "owner": "manicinc",
-            "repo": "drugwars"
+            "repo": "drug-wars"
         }
     }
 }
