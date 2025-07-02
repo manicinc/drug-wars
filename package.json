@@ -25,6 +25,35 @@
     "build": {
         "appId": "com.manicinc.drugwars",
         "productName": "DrugWars",
+        "directories": {
+            "output": "release/"
+        },
+        "files": [
+            "index.html",
+            "electron.js",
+            "preload.js",
+            "package.json",
+            "node_modules/"
+        ],
+        "win": {
+            "target": "nsis",
+            "icon": "assets/icon.ico"
+        },
+        "mac": {
+            "target": "dmg",
+            "category": "public.app-category.games",
+            "icon": "assets/icon.png"
+        },
+        "linux": {
+            "target": [
+                {
+                    "target": "AppImage",
+                    "arch": ["x64"]
+                }
+            ],
+            "category": "Game",
+            "icon": "assets/icon.png"
+        },
         "publish": {
             "provider": "github",
             "owner": "manicinc",
