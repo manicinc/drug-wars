@@ -79,6 +79,12 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Clear npm cache (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          npm cache clean --force
+          rm -rf node_modules package-lock.json
+
       - name: Install Dependencies
         run: npm ci
 
