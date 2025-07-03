@@ -564,6 +564,36 @@
             text-decoration: none;
         }
         
+        .controls-section {
+            background-color: #0f0f0f;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .controls-section h5 {
+            color: #ffff00;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        .control-key {
+            color: #ffff00;
+            font-weight: bold;
+            background-color: #1a1a1a;
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid #666;
+        }
+        
         .skip-link {
             position: absolute;
             top: -40px;
@@ -979,6 +1009,78 @@
                     <li><strong>Gun ($500):</strong> Protection from danger, can misfire over time</li>
                 </ul>
                 
+                <div class="controls-section">
+                    <h5>⌨️ Keyboard Controls</h5>
+                    <div class="control-item">
+                        <span>Navigate drugs</span>
+                        <span><span class="control-key">↑↓</span> or <span class="control-key">W/S</span> or <span class="control-key">Tab</span></span>
+                    </div>
+                    <div class="control-item">
+                        <span>Buy drug</span>
+                        <span><span class="control-key">b</span> or <span class="control-key">←</span></span>
+                    </div>
+                    <div class="control-item">
+                        <span>Sell drug</span>
+                        <span><span class="control-key">Shift+S</span> or <span class="control-key">→</span></span>
+                    </div>
+                    <div class="control-item">
+                        <span>Quick action</span>
+                        <span><span class="control-key">Enter</span> or <span class="control-key">Space</span></span>
+                    </div>
+                    <div class="control-item">
+                        <span>Travel menu</span>
+                        <span><span class="control-key">t</span></span>
+                    </div>
+                    <div class="control-item">
+                        <span>Quick travel</span>
+                        <span><span class="control-key">1-6</span> (locations)</span>
+                    </div>
+                    <div class="control-item">
+                        <span>Close/Cancel</span>
+                        <span><span class="control-key">Esc</span></span>
+                    </div>
+                    <div class="control-item">
+                        <span>Help</span>
+                        <span><span class="control-key">?</span> or <span class="control-key">/</span></span>
+                    </div>
+                </div>
+                
+                <div class="controls-section">
+                    <h5>💰 Quick Actions</h5>
+                    <div class="control-item">
+                        <span>Bank</span>
+                        <span><span class="control-key">Shift+B</span></span>
+                    </div>
+                    <div class="control-item">
+                        <span>Loan Shark</span>
+                        <span><span class="control-key">l</span> or <span class="control-key">Shift+L</span></span>
+                    </div>
+                    <div class="control-item">
+                        <span>Hospital</span>
+                        <span><span class="control-key">h</span></span>
+                    </div>
+                    <div class="control-item">
+                        <span>Use Items</span>
+                        <span><span class="control-key">u</span> (painkillers/first aid)</span>
+                    </div>
+                    <div class="control-item">
+                        <span>Help/Info</span>
+                        <span><span class="control-key">Shift+H</span></span>
+                    </div>
+                </div>
+                
+                <div class="controls-section">
+                    <h5>🎮 Pro Tips</h5>
+                    <ul style="font-size: 0.9rem;">
+                        <li><strong>Enter/Space:</strong> Smart action - buys if you don't have any, sells if you do!</li>
+                        <li><strong>Number keys:</strong> Instant travel without opening menu</li>
+                        <li><strong>Shift+Letter:</strong> Capital letters for less common actions</li>
+                        <li><strong>Arrow keys:</strong> Full navigation and quick buy/sell</li>
+                        <li><strong>W/A/S/D:</strong> Alternative navigation for gamers</li>
+                        <li><strong>Ctrl+Key:</strong> Alternative for any action (Ctrl+B for Bank, etc.)</li>
+                    </ul>
+                </div>
+                
                 <h4>⚡ New Mechanics</h4>
                 <ul>
                     <li><strong>Item Durability:</strong> Some items break and need replacement</li>
@@ -1005,6 +1107,17 @@
     </div>
 
     <script>
+        // Prevent viewport scaling on iOS
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            if (e.scale !== 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
         // Enhanced game state with new mechanics
         let gameState = {
             cash: 2000,
@@ -1029,7 +1142,7 @@
             }
         };
         
-        // UI state
+        // UI state - ADDED KEYBOARD NAVIGATION VARIABLES
         let selectedDrugIndex = 0;
         let keyboardMode = false;
         let lastInteractionWasKeyboard = false;
@@ -1144,11 +1257,206 @@
             });
         }
         
+        // ADDED: Setup keyboard navigation
+        function setupKeyboardNavigation() {
+            // Detect keyboard usage
+            document.addEventListener('keydown', function(e) {
+                lastInteractionWasKeyboard = true;
+                if (!keyboardMode) {
+                    keyboardMode = true;
+                    document.body.classList.add('keyboard-nav');
+                }
+            });
+            
+            document.addEventListener('mousedown', function() {
+                lastInteractionWasKeyboard = false;
+                if (keyboardMode) {
+                    keyboardMode = false;
+                    document.body.classList.remove('keyboard-nav');
+                }
+            });
+            
+            document.addEventListener('touchstart', function() {
+                lastInteractionWasKeyboard = false;
+                if (keyboardMode) {
+                    keyboardMode = false;
+                    document.body.classList.remove('keyboard-nav');
+                }
+            });
+            
+            // Global keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Skip if typing in input
+                if (e.target.tagName === 'INPUT') {
+                    if (e.key === 'Escape') {
+                        e.target.blur();
+                        closeModal();
+                    }
+                    // Allow Enter to confirm in modals
+                    if (e.key === 'Enter' && document.getElementById('modal').style.display === 'flex') {
+                        document.getElementById('modal-confirm').click();
+                    }
+                    return;
+                }
+                
+                const key = e.key;
+                const isShift = e.shiftKey;
+                const isCtrl = e.ctrlKey || e.metaKey;
+                
+                // Modal controls
+                if (document.querySelector('.modal[style*="flex"]')) {
+                    if (key === 'Escape') {
+                        closeModal();
+                        closeTravelModal();
+                        closeInfoModal();
+                    }
+                    // Number keys for travel modal
+                    if (document.getElementById('travel-modal').style.display === 'flex' && key >= '1' && key <= '6') {
+                        e.preventDefault();
+                        const buttons = document.querySelectorAll('#travel-options button');
+                        const index = parseInt(key) - 1;
+                        if (buttons[index]) {
+                            buttons[index].click();
+                        }
+                    }
+                    return;
+                }
+                
+                // Prevent default for our shortcuts
+                const preventDefaultKeys = ['b', 'B', 's', 'S', 't', 'T', 'l', 'L', 'h', 'H', 'g', 'G', 'c', 'C', 'u', 'U', '?', '/', 'Enter', ' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+                if (preventDefaultKeys.includes(key) || (key >= '1' && key <= '6')) {
+                    e.preventDefault();
+                }
+                
+                // Help (? or /)
+                if (key === '?' || key === '/') {
+                    showInfo();
+                    return;
+                }
+                
+                // Drug navigation
+                if (key === 'ArrowUp' || key === 'w' || key === 'W') {
+                    selectedDrugIndex = Math.max(0, selectedDrugIndex - 1);
+                    updateDrugSelection();
+                } else if (key === 'ArrowDown' || key === 's' || key === 'S') {
+                    if (!isShift) { // Only if not trying to sell
+                        selectedDrugIndex = Math.min(drugs.length - 1, selectedDrugIndex + 1);
+                        updateDrugSelection();
+                    }
+                } else if (key === 'Tab') {
+                    e.preventDefault();
+                    if (isShift) {
+                        selectedDrugIndex = Math.max(0, selectedDrugIndex - 1);
+                    } else {
+                        selectedDrugIndex = Math.min(drugs.length - 1, selectedDrugIndex + 1);
+                    }
+                    updateDrugSelection();
+                }
+                
+                // Drug actions
+                const currentDrug = drugs[selectedDrugIndex].name;
+                
+                // Buy drug (b or left arrow)
+                if ((key === 'b' && !isShift) || key === 'ArrowLeft') {
+                    buyDrug(currentDrug);
+                }
+                // Sell drug (Shift+S or right arrow)
+                else if ((key === 'S' && isShift) || key === 'ArrowRight') {
+                    if (gameState.inventory[currentDrug] > 0) {
+                        sellDrug(currentDrug);
+                    } else {
+                        showMessage(`You don't have any ${currentDrug} to sell!`);
+                    }
+                }
+                // Quick buy/sell with Enter or Space
+                else if (key === 'Enter' || key === ' ') {
+                    if (gameState.inventory[currentDrug] > 0) {
+                        // If we have some, default to selling
+                        sellDrug(currentDrug);
+                    } else {
+                        // If we don't have any, buy
+                        buyDrug(currentDrug);
+                    }
+                }
+                
+                // Location shortcuts
+                else if (key === 't' && !isShift) {
+                    showTravelMenu();
+                }
+                else if (key >= '1' && key <= '6') {
+                    const locationIndex = parseInt(key) - 1;
+                    if (locationIndex < locations.length && locations[locationIndex] !== gameState.location) {
+                        travel(locations[locationIndex]);
+                    }
+                }
+                
+                // Finance shortcuts
+                else if (key === 'B' && isShift) {
+                    visitBank();
+                }
+                else if (key === 'l' && !isShift) {
+                    visitLoanShark();
+                }
+                else if (key === 'L' && isShift) {
+                    visitLoanShark();
+                }
+                
+                // Health and items
+                else if (key === 'h' && !isShift) {
+                    visitHospital();
+                }
+                else if (key === 'H' && isShift) {
+                    showInfo();
+                }
+                else if (key === 'u' && !isShift) {
+                    // Quick use item - prioritize first aid kit, then painkillers
+                    if (gameState.items.firstAid.owned > 0) {
+                        useItem('firstAid');
+                    } else if (gameState.items.painkillers.owned > 0) {
+                        useItem('painkillers');
+                    } else {
+                        showMessage("You don't have any medical supplies!");
+                    }
+                }
+                
+                // Quick actions with Ctrl
+                if (isCtrl) {
+                    switch(key.toLowerCase()) {
+                        case 'b': visitBank(); break;
+                        case 't': showTravelMenu(); break;
+                        case 'l': visitLoanShark(); break;
+                        case 'h': visitHospital(); break;
+                        case 'u': 
+                            if (gameState.items.firstAid.owned > 0) {
+                                useItem('firstAid');
+                            } else if (gameState.items.painkillers.owned > 0) {
+                                useItem('painkillers');
+                            }
+                            break;
+                    }
+                }
+            });
+        }
+        
+        // ADDED: Update drug selection visual
+        function updateDrugSelection() {
+            const drugItems = document.querySelectorAll('.drug-item');
+            drugItems.forEach((item, index) => {
+                item.classList.toggle('keyboard-focus', index === selectedDrugIndex);
+                item.setAttribute('aria-selected', index === selectedDrugIndex);
+            });
+            
+            // Scroll into view if needed
+            if (drugItems[selectedDrugIndex]) {
+                drugItems[selectedDrugIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+        
         // Initialize game
         function initGame() {
             updatePrices();
             updateDisplay();
-            setupKeyboardNavigation();
+            setupKeyboardNavigation(); // ADDED: Setup keyboard navigation
             setupModalClickOutside();
             fetchGitHubStats();
             
@@ -1169,27 +1477,6 @@
                 // If GitHub API fails, just leave the defaults
                 console.log('GitHub API unavailable');
             }
-        }
-        
-        // Setup keyboard navigation (simplified for space)
-        function setupKeyboardNavigation() {
-            document.addEventListener('keydown', function(e) {
-                lastInteractionWasKeyboard = true;
-                if (!keyboardMode) {
-                    keyboardMode = true;
-                    document.body.classList.add('keyboard-nav');
-                }
-            });
-            
-            document.addEventListener('mousedown', function() {
-                lastInteractionWasKeyboard = false;
-                if (keyboardMode) {
-                    keyboardMode = false;
-                    document.body.classList.remove('keyboard-nav');
-                }
-            });
-            
-            // Global keyboard shortcuts remain the same...
         }
         
         // Health effects on gameplay
@@ -1814,6 +2101,7 @@
                 div.className = 'drug-item';
                 div.setAttribute('role', 'listitem');
                 div.setAttribute('tabindex', '0');
+                div.setAttribute('aria-label', `${drug.name}: $${gameState.prices[drug.name].toLocaleString()} each, you own ${gameState.inventory[drug.name] || 0} units`);
                 
                 const owned = gameState.inventory[drug.name] || 0;
                 const price = gameState.prices[drug.name];
@@ -1828,8 +2116,27 @@
                     </div>
                 `;
                 
+                // ADDED: Add click handler for entire row
+                div.addEventListener('click', function(e) {
+                    if (e.target.tagName !== 'BUTTON') {
+                        selectedDrugIndex = index;
+                        updateDrugSelection();
+                    }
+                });
+                
+                // ADDED: Add keyboard focus handler
+                div.addEventListener('focus', function() {
+                    selectedDrugIndex = index;
+                    updateDrugSelection();
+                });
+                
                 drugList.appendChild(div);
             });
+            
+            // ADDED: Restore selection if using keyboard
+            if (keyboardMode) {
+                updateDrugSelection();
+            }
         }
         
         function updateInventory() {
@@ -1927,11 +2234,21 @@
             };
             
             modal.style.display = 'flex';
-            setTimeout(() => input.focus(), 100);
+            
+            // ADDED: Focus management
+            setTimeout(() => {
+                if (lastInteractionWasKeyboard || window.innerWidth > 768) {
+                    input.focus();
+                }
+            }, 100);
         }
         
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
+            // ADDED: Return focus to drug list if using keyboard
+            if (keyboardMode) {
+                updateDrugSelection();
+            }
         }
         
         function showTravelMenu() {
@@ -1945,12 +2262,19 @@
                     btn.textContent = `${index + 1}. ${loc}`;
                     btn.style.width = '100%';
                     btn.style.marginBottom = '10px';
+                    btn.setAttribute('aria-label', `Travel to ${loc}`);
                     btn.onclick = () => travel(loc);
                     options.appendChild(btn);
                 }
             });
             
             modal.style.display = 'flex';
+            
+            // ADDED: Focus modal content
+            setTimeout(() => {
+                const modalContent = modal.querySelector('.modal-content');
+                modalContent.focus();
+            }, 100);
         }
         
         function closeTravelModal() {
@@ -2014,10 +2338,18 @@
             messageEl.innerHTML = text;
             messageEl.classList.add('flash');
             setTimeout(() => messageEl.classList.remove('flash'), 500);
+            
+            // ADDED: Announce to screen readers
+            messageEl.setAttribute('aria-live', 'assertive');
         }
         
         function showInfo() {
             document.getElementById('info-modal').style.display = 'flex';
+            // ADDED: Focus management
+            setTimeout(() => {
+                const modalContent = document.querySelector('#info-modal .modal-content');
+                modalContent.focus();
+            }, 100);
         }
         
         function closeInfoModal() {
@@ -2038,6 +2370,23 @@
             alert(`GAME OVER!\n\nNet Worth: $${netWorth.toLocaleString()}\nFinal Health: ${gameState.health}%\nRating: ${rating}\n\nPlay again?`);
             location.reload();
         }
+        
+        // Prevent double-tap zoom
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // Prevent pinch zoom
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
         
         // Initialize game
         initGame();
